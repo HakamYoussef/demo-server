@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
-import SideBar from "../components/SideBar";
+import Navbar from "../components/Navbar";
 import { TbArrowBackUp } from "react-icons/tb";
 
 const page = () => {
@@ -23,7 +23,7 @@ const page = () => {
   return (
     <div>
       <div className="flex">
-        <SideBar />
+        <Navbar />
         <div className="flex flex-col">
           <div className="flex">
             <a href="/air">

@@ -1,7 +1,7 @@
 import React from "react";
-import SideBar from "../components/SideBar";
 import { FaTemperatureHigh } from "react-icons/fa";
 import { FiWind } from "react-icons/fi";
+import Navbar from "../components/Navbar";
 import {
   GiWindsock,
   GiThermometerHot,
@@ -61,7 +61,7 @@ const page = () => {
   ];
   return (
     <div className="flex">
-      <SideBar />
+      <Navbar />
       <div>
         <h1 className="text-5xl font-bold pl-7 pt-3">Conditions actuelles</h1>
         <div className="flex gap-2 pl-5 py-2.5">

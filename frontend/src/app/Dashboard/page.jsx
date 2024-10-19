@@ -1,9 +1,8 @@
 import React from "react";
-import SideBar from "../components/SideBar";
 import CardC from "../components/CardC";
 import Ddd from "../charts/Ddd";
 import Sections from "../components/Sections";
-
+import Navbar from "../components/Navbar";
 const page = () => {
   const graphs = [
     {
@@ -25,7 +24,7 @@ const page = () => {
   return (
     <div className="">
       <div className="flex">
-        <SideBar />
+        <Navbar />
         <div className="flex flex-col">
           <Sections />
           <div className="mb-1">
