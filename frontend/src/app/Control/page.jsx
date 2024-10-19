@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react';
+import protectedRoute from "../components/protectedRoute";
 
 const ControlPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
