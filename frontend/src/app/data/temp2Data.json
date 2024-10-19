@@ -1,0 +1,32 @@
+[
+    {
+      "label": "Lundi",
+      "revenue": 20
+  
+    },
+    {
+      "label": "Mardi",
+      "revenue": 15
+    },
+    {
+      "label": "Mercredi",
+      "revenue": 31
+    },
+    {
+      "label": "Jeudi",
+      "revenue": 12
+    },
+    {
+      "label": "Vendredi",
+      "revenue": 17
+    },
+    {
+      "label": "Samedi",
+      "revenue": 20
+    },
+    {
+      "label": "Dimanche",
+      "revenue": 5
+    }
+  ]
+  
