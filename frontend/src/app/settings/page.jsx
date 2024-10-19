@@ -5,6 +5,7 @@ import { useToast } from "@chakra-ui/react";
 import { useAuthContext } from "../context/authContext";
 import Image from "next/image";
 import Sidebar from "@/app/components/Navbar";
+import protectedRoute from "../components/protectedRoute";
 
 const Page = () => {
   const [data, setData] = useState({});
