@@ -2,6 +2,8 @@ import React from "react";
 import { FaTemperatureHigh } from "react-icons/fa";
 import { FiWind } from "react-icons/fi";
 import Navbar from "../components/Navbar";
+import protectedRoute from "../components/protectedRoute";
+
 import {
   GiWindsock,
   GiThermometerHot,
