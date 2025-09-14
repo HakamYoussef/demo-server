@@ -10,6 +10,7 @@ import { WebSocketServer } from "ws";
 
 import { fetchLatestData, getLatestData } from "./controllers/capteurs-controller.mjs";
 import adminRouter from "./routes/admin.mjs";
+import radiationRouter from "./routes/radiation-routes.mjs";
 
 const app = express();
 const PORT = process.env.PORT || 5002;
@@ -20,6 +21,7 @@ app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use("/api/users", userRouter); // Route for user-related requests
 app.use("/api/capteurs", capteurRouter); // Route for capteur-related requests
 app.use("/api/admin", adminRouter); // Route for admin-related requests
+app.use("/api/radiation", radiationRouter); // Route for radiation-related requests
 
 // Route for the root URL
 app.get("/", (req, res, next) => {
