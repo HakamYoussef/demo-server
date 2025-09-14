@@ -1,21 +1,37 @@
 'use client'
 import { useAuthContext } from "../context/authContext";
 import { useRouter } from "next/navigation";
-import { useToast } from "@chakra-ui/react";
+import {
+  useToast,
+  Spinner,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { FaRegEnvelope } from "react-icons/fa";
-import {MdLockOutline} from "react-icons/md";
-import { Spinner } from "@chakra-ui/react";
+import { MdLockOutline } from "react-icons/md";
 export default function Singin() {
   const router = useRouter();
   const toast = useToast();
-  const { login, logout } = useAuthContext();
+  const { login } = useAuthContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
   const images = ["cnestenC.png","greenpark.png", "iresen1.png", "fst.png"];
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleProjectSelect = (path) => {
+    onClose();
+    router.push(path);
+  };
   const handleLogin = async () => {
     setIsLoading(true);
     try {
@@ -40,7 +56,7 @@ export default function Singin() {
           isClosable: true,
           position: "bottom",
         });
-        router.push("/air");
+        onOpen();
       } else {
         toast({
           title: `${data.message}`,
@@ -104,7 +120,6 @@ export default function Singin() {
                         onClick={handleLogin}
                         disabled={isLoading} 
                         className="border-2 border-green-500 rounded-full mt-2 mb-1 px-12 py-2 inline-block font-semibold hover:bg-green-500 hover:text-white">
-                        {isLoading ? <Spinner size="sm" /> : "SUBMIT"}
                         </button>
 
                         <div className="mt-2 w-5 border-2 border-black"></div>
@@ -134,6 +149,21 @@ export default function Singin() {
           </div>
         </div>
       </main>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Select Project</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display="flex" flexDirection="column" gap={4}>
+            <Button colorScheme="green" onClick={() => handleProjectSelect('/air')}>
+              CR-SEAiP Project
+            </Button>
+            <Button onClick={() => handleProjectSelect('/radiation')}>
+              Radiation Dash
+            </Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
