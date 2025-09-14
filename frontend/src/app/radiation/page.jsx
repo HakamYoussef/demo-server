@@ -4,7 +4,7 @@ import { Button, Input, useToast } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "../context/authContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
@@ -13,6 +13,7 @@ export default function RadiationDash() {
   const { logout, token } = useAuthContext();
   const toast = useToast();
   const [values, setValues] = useState({ Vbas: "", Vhaut: "", Delta: "" });
+  const [radiationData, setRadiationData] = useState([]);
 
   const handleLogout = () => {
     logout();
@@ -23,10 +24,26 @@ export default function RadiationDash() {
     setValues((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:5002/api/radiation", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setRadiationData(data);
+      } else {
+        console.error("Error fetching data:", data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const handleSend = async () => {
     try {
-      const response = await fetch("http://localhost:5002/api/admin/control", {
-        method: "PUT",
+      const response = await fetch("http://localhost:5002/api/radiation", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -46,6 +63,7 @@ export default function RadiationDash() {
           isClosable: true,
           position: "bottom",
         });
+        fetchData();
       } else {
         console.error("Error sending values:", data.message);
       }
@@ -54,10 +72,15 @@ export default function RadiationDash() {
     }
   };
 
-  const data = [
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const chartData = [
     {
-      x: [1, 2, 3, 4],
-      y: [1, 3, 2, 4],
+      x: radiationData.map((d) => new Date(d.timestamp).toLocaleTimeString()),
+      y: radiationData.map((d) => d.Delta),
       type: "scatter",
       mode: "lines+markers",
       marker: { color: "green" },
@@ -85,19 +108,19 @@ export default function RadiationDash() {
         <Input
           type="number"
           placeholder="Vbas"
-          value={values.elv1}
+          value={values.Vbas}
           onChange={handleChange("Vbas")}
         />
         <Input
           type="number"
           placeholder="Vhaut"
-          value={values.elv2}
+          value={values.Vhaut}
           onChange={handleChange("Vhaut")}
         />
         <Input
           type="number"
           placeholder="Delta"
-          value={values.elv3}
+          value={values.Delta}
           onChange={handleChange("Delta")}
         />
       </div>
@@ -107,7 +130,7 @@ export default function RadiationDash() {
         </Button>
       </div>
       <div className="border rounded shadow-md p-4">
-        <Plot data={data} layout={layout} className="w-full" />
+        <Plot data={chartData} layout={layout} className="w-full" />
       </div>
     </div>
   );
