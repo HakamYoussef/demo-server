@@ -27,4 +27,15 @@ const postComptage = async (req, res) => {
   }
 };
 
-export { getConfig, postComptage };
+
+const getComptage = async (req, res) => {
+  try {
+    const readings = await ArduinoReading.find().sort({ timestamp: 1 });
+    res.json(readings);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving data", error });
+  }
+};
+
+
+export { getConfig, postComptage, getComptage };
