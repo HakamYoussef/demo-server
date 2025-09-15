@@ -119,7 +119,9 @@ export default function Singin() {
                         <button
                         onClick={handleLogin}
                         disabled={isLoading} 
+                        type="submit"
                         className="border-2 border-green-500 rounded-full mt-2 mb-1 px-12 py-2 inline-block font-semibold hover:bg-green-500 hover:text-white">
+                          Sign in
                         </button>
 
                         <div className="mt-2 w-5 border-2 border-black"></div>
@@ -152,13 +154,13 @@ export default function Singin() {
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select Project</ModalHeader>
+          <ModalHeader >Select Project</ModalHeader>
           <ModalCloseButton />
-          <ModalBody display="flex" flexDirection="column" gap={4}>
+          <ModalBody className = "m-1" display="flex" flexDirection="column" gap={4}>
             <Button colorScheme="green" onClick={() => handleProjectSelect('/air')}>
               CR-SEAiP Project
             </Button>
-            <Button onClick={() => handleProjectSelect('/radiation')}>
+            <Button className="mb-2" onClick={() => handleProjectSelect('/radiation')}>
               Radiation Dash
             </Button>
           </ModalBody>
