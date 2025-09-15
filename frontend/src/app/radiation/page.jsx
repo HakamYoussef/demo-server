@@ -26,7 +26,7 @@ export default function RadiationDash() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:5002/api/radiation", {
+      const response = await fetch("http://localhost:5002/api/arduino/readings", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -80,7 +80,7 @@ export default function RadiationDash() {
   const chartData = [
     {
       x: radiationData.map((d) => new Date(d.timestamp).toLocaleTimeString()),
-      y: radiationData.map((d) => d.Delta),
+      y: radiationData.map((d) => d.comptage),
       type: "scatter",
       mode: "lines+markers",
       marker: { color: "green" },
