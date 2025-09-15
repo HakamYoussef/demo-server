@@ -74,6 +74,35 @@ export default function RadiationDash() {
 
   useEffect(() => {
     fetchData();
+
+    const socket = new WebSocket(
+      "ws://213.199.35.129:5002/api/v1/readings"
+    );
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setRadiationData((prev) => [...prev, data]);
+      } catch (err) {
+        console.error("Error parsing message:", err);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    return () => {
+      socket.close();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
