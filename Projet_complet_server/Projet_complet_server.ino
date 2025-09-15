@@ -22,9 +22,9 @@ const char POST_URL[] = "http://213.199.35.129/api/v1/readings";
 // ===================== X9C CONFIG =====================
 const int INC = 2;
 const int UD  = 3;
-const int CS1 = 4;   // Haut  (Vh)
+const int CS1 = 4;   // Haut  (Vhaut)
 const int CS2 = 6;   // Delta (delta)
-const int CS3 = 10;  // Bas   (Vb)
+const int CS3 = 10;  // Bas   (Vbas)
 
 // Bornes mesurées (tes valeurs originales)
 const float Vmin_CS3 = 0.2477, Vmax_CS3 = 1.8489; // Bas
@@ -37,7 +37,7 @@ int pos1 = -1, pos2 = -1, pos3 = -1;  // mémoires positions X9C
 
 // ==================== FORWARD DECLS =====================
 bool httpInit();
-bool api_read_config(float &Vb, float &Vh, float &delta);
+bool api_read_config(float &Vbas, float &Vhaut, float &delta);
 bool api_post_comptage(unsigned int pulses);
 // ========================================================
 
@@ -240,8 +240,8 @@ bool jsonExtractNumber(const String& json, const char* key, float &outVal) {
   return true;
 }
 
-// GET /api/v1/config  -> {"Vb":x,"Vh":y,"delta":z}
-bool api_read_config(float &Vb, float &Vh, float &delta) {
+// GET /api/v1/config  -> {"Vbas":x,"Vhaut":y,"delta":z}
+bool api_read_config(float &Vbas, float &Vhaut, float &delta) {
   Serial.println(F("\n=== GET /api/v1/config ==="));
   if (!httpInit()) { Serial.println(F("[ERROR] httpInit")); return false; }
 
@@ -274,19 +274,19 @@ bool api_read_config(float &Vb, float &Vh, float &delta) {
   if (lb < 0 || rb <= lb) { Serial.println(F("[ERROR] JSON not found")); return false; }
   String json = body.substring(lb, rb + 1);
 
-  float _Vb = 0, _Vh = 0, _d = 0;
-  bool ok1 = jsonExtractNumber(json, "Vb", _Vb);
-  bool ok2 = jsonExtractNumber(json, "Vh", _Vh);
+  float _Vbas = 0, _Vhaut = 0, _d = 0;
+  bool ok1 = jsonExtractNumber(json, "Vbas", _Vbas);
+  bool ok2 = jsonExtractNumber(json, "Vhaut", _Vhaut);
   bool ok3 = jsonExtractNumber(json, "delta", _d);
 
-  Serial.print(F("[PARSED] Vb=")); Serial.print(_Vb);
-  Serial.print(F(" Vh=")); Serial.print(_Vh);
+  Serial.print(F("[PARSED] Vbas=")); Serial.print(_Vbas);
+  Serial.print(F(" Vhaut=")); Serial.print(_Vhaut);
   Serial.print(F(" delta=")); Serial.println(_d);
 
   if (!(ok1 || ok2 || ok3)) return false;
 
-  Vb    = ok1 ? _Vb : Vb;
-  Vh    = ok2 ? _Vh : Vh;
+  Vbas    = ok1 ? _Vbas : Vbas;
+  Vhaut    = ok2 ? _Vhaut : Vhaut;
   delta = ok3 ? _d  : delta;
 
   return true;
@@ -422,10 +422,10 @@ void setup() {
   initPulseCounter();
 
   // ---- 1) Lire config depuis API et positionner les 3 X9C ----
-  float Vb = 0, Vh = 0, delta = 0;
-  if (api_read_config(Vb, Vh, delta)) {
-    int target_CS3 = voltageToPos(Vb,    Vmin_CS3, Vmax_CS3); // Bas
-    int target_CS1 = voltageToPos(Vh,    Vmin_CS1, Vmax_CS1); // Haut
+  float Vbas = 0, Vhaut = 0, delta = 0;
+  if (api_read_config(Vbas, Vhaut, delta)) {
+    int target_CS3 = voltageToPos(Vbas,    Vmin_CS3, Vmax_CS3); // Bas
+    int target_CS1 = voltageToPos(Vhaut,    Vmin_CS1, Vmax_CS1); // Haut
     int target_CS2 = voltageToPos(delta, Vmin_CS2, Vmax_CS2); // Delta
     x9cGoTo(target_CS3, CS3, pos3);
     x9cGoTo(target_CS1, CS1, pos1);
@@ -450,10 +450,10 @@ void loop() {
     rampPos1 = 0; rampPos3 = 0; rampDir = +1;
 
     // Fin de cycle -> relire CONFIG depuis API
-    float Vb = 0, Vh = 0, d = 0;
-    if (api_read_config(Vb, Vh, d)) {
-      int t3 = voltageToPos(Vb, Vmin_CS3, Vmax_CS3);
-      int t1 = voltageToPos(Vh, Vmin_CS1, Vmax_CS1);
+    float Vbas = 0, Vhaut = 0, d = 0;
+    if (api_read_config(Vbas, Vhaut, d)) {
+      int t3 = voltageToPos(Vbas, Vmin_CS3, Vmax_CS3);
+      int t1 = voltageToPos(Vhaut, Vmin_CS1, Vmax_CS1);
       int t2 = voltageToPos(d,  Vmin_CS2, Vmax_CS2);
       pos3 = t3; pos1 = t1;
       x9cGoTo(t2, CS2, pos2);
