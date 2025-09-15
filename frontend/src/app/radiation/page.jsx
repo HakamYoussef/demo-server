@@ -26,7 +26,7 @@ export default function RadiationDash() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:5002/api/arduino/readings", {
+      const response = await fetch("http://localhost:5002/api/v1/readings", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
