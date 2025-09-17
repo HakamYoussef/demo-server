@@ -6,7 +6,7 @@ const configSchema = new mongoose.Schema(
     Vhaut: { type: Number, required: true },
     delta: { type: Number, required: true }
   },
-  { collection: 'radiation', timestamps: true }
+  { collection: 'radiations', timestamps: true }
 );
 
 const ArduinoConfig = mongoose.model('radiation', configSchema);
