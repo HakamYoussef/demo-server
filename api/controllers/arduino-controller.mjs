@@ -1,9 +1,10 @@
-import { ArduinoConfig } from "../models/arduino-config.mjs";
+
+import { Radiation } from "../models/Radiation.mjs";
 import { ArduinoReading } from "../models/arduino-reading.mjs";
 
 const getConfig = async (req, res) => {
   try {
-    const config = await ArduinoConfig.findOne().sort({ createdAt: -1 }).lean();
+    const config = await Radiation.findOne().sort({ createdAt: -1 }).lean();
     if (!config) {
       return res.json({ Vb: 0, Vh: 0, delta: 0 });
     }
