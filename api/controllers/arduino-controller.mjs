@@ -8,7 +8,7 @@ const getConfig = async (req, res) => {
     if (!config) {
       return res.json({ Vbas: 0, Vhaut: 0, delta: 0 });
     }
-    res.json({ Vbas: config.Vbas, Vhaut: config.Vhaut, delta: config.delta });
+    res.json({ Vbas: config.Vbas, Vhaut: config.Vhaut, Delta: config.Delta });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving config", error });
   }
