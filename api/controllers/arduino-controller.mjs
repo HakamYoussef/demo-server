@@ -6,7 +6,7 @@ const getConfig = async (req, res) => {
   try {
     const config = await Radiation.findOne().sort({ createdAt: -1 }).lean();
     if (!config) {
-      return res.json({ Vb: 0, Vh: 0, delta: 0 });
+      return res.json({ Vbas: 0, Vhaut: 0, delta: 0 });
     }
     res.json({ Vbas: config.Vbas, Vhaut: config.Vhaut, delta: config.delta });
   } catch (error) {
