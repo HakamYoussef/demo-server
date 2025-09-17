@@ -4,7 +4,7 @@ import { ArduinoReading } from "../models/arduino-reading.mjs";
 
 const getConfig = async (req, res) => {
   try {
-    const config = await Radiation.findOne().sort({ createdAt: -1 }).lean();
+    const config = await Radiation.findOne().sort({ timestamp: -1 }).lean();
     if (!config) {
       return res.json({ Vbas: 0, Vhaut: 0, delta: 0 });
     }
