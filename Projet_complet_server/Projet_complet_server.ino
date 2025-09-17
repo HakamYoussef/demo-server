@@ -13,9 +13,9 @@ const unsigned long CMD_TIMEOUT    = 8000;
 const unsigned long ACTION_TIMEOUT = 30000;
 const unsigned long STEP_PERIOD_MS = 15000;  // 15s entre pas
 
-// === API (Contabo/Nginx) ===
-const char CFG_URL[]  = "http://213.199.35.129/api/v1/config";
-const char POST_URL[] = "http://213.199.35.129/api/v1/readings";
+// === API (Node server on port 5002) ===
+const char CFG_URL[]  = "http://213.199.35.129:5002/api/v1/config";
+const char POST_URL[] = "http://213.199.35.129:5002/api/v1/readings";
 // ========================================================
 
 
@@ -139,7 +139,7 @@ bool httpGET(int &status, int &length, String &body) {
     }
     delay(5);
   }
-  if (status != 200) return false;
+  if (status < 200 || status >= 300) return false;
 
   // Lire exactement 'length' octets avec timeout مرن
   char cmd[48];
@@ -361,7 +361,7 @@ bool api_post_comptage(unsigned int pulses) {
   sendAT("AT+HTTPTERM"); waitFor("OK", 800);
 
   Serial.print(F("[HTTP status] ")); Serial.println(status);
-  return status == 200;
+  return status >= 200 && status < 300;
 }
 // ========================================================
 
