@@ -25,7 +25,8 @@ export default function Singin() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
-  const images = ["cnestenC.png","greenpark.png", "iresen1.png", "fst.png"];
+  //const images = ["cnestenC.png","greenpark.png", "iresen1.png", "fst.png"];
+  const images = ["cnestenC.png"]; 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleProjectSelect = (path) => {
@@ -125,14 +126,14 @@ export default function Singin() {
                         </button>
 
                         <div className="mt-2 w-5 border-2 border-black"></div>
-                        <sub className="pt-2 text-sm">Agro-Photovoltaique Experimental Station</sub>
+                        <sub className="pt-2 text-sm">Radiation Monitoring</sub>
                     </div>
             </div>
           </div>
 
           {/* Slideshow Section */}
           <div className="w-3/5 bg-green-500 text-white rounded-tr-2xl rounded-br-2xl py-20 px-12">
-            <h2 className="text-2xl font-bold mb-1">Green House Monitoring</h2>
+            <h2 className="text-2xl font-bold mb-1">Radiation Monitoring</h2>
             <div className="border-2 w-32 border-white inline-block mb-1"></div>
             <h2 className="font-bold">The partenrs of this project are : </h2>
             <div className="my-2 ml-2 mr-2 pr-2 relative w-52 h-72 overflow-hidden">
