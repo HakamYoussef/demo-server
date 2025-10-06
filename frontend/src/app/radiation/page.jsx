@@ -241,20 +241,59 @@ export default function RadiationDash() {
     };
   }, [applyIncomingData, showToast, WEBSOCKET_URL]);
 
-  const chartData = [
-    {
-      x: radiationData.map((d) => new Date(d.timestamp).toLocaleTimeString()),
-      y: radiationData.map((d) => d.comptage),
-      type: "scatter",
-      mode: "lines+markers",
-      marker: { color: "green" },
-    },
-  ];
+  const asNumber = (value) => {
+    const parsed = typeof value === "string" ? Number.parseFloat(value) : value;
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+
+  const timelinePoints = radiationData
+    .map((entry) => ({
+      timestamp: entry?.timestamp,
+      comptage: asNumber(entry?.comptage),
+    }))
+    .filter((entry) => entry.timestamp && entry.comptage !== null);
+
+  const chartData = timelinePoints.length
+    ? [
+        {
+          x: timelinePoints.map((d) => new Date(d.timestamp).toLocaleTimeString()),
+          y: timelinePoints.map((d) => d.comptage),
+          type: "scatter",
+          mode: "lines+markers",
+          marker: { color: "green" },
+        },
+      ]
+    : [];
+
+  const picComptageEntries = radiationData
+    .map((entry) => ({
+      pic: asNumber(entry?.pic),
+      comptage: asNumber(entry?.comptage),
+    }))
+    .filter((entry) => entry.pic !== null && entry.comptage !== null);
+
+  const picChartData = picComptageEntries.length
+    ? [
+        {
+          x: picComptageEntries.map((entry) => entry.pic),
+          y: picComptageEntries.map((entry) => entry.comptage),
+          type: "scatter",
+          mode: "markers",
+          marker: { color: "#2563eb" },
+        },
+      ]
+    : [];
 
   const layout = {
     title: "Radiation Chart",
     xaxis: { title: "Time" },
     yaxis: { title: "Value" },
+  };
+
+  const picLayout = {
+    title: "Comptage by Pic",
+    xaxis: { title: "Pic" },
+    yaxis: { title: "Comptage" },
   };
 
   return (
@@ -302,7 +341,23 @@ export default function RadiationDash() {
         </Button>
       </div>
       <div className="border rounded shadow-md p-4">
-        <Plot data={chartData} layout={layout} className="w-full" />
+        {chartData.length ? (
+          <Plot data={chartData} layout={layout} className="w-full" />
+        ) : (
+          <p className="text-center text-sm text-gray-500">
+            Aucun comptage valide à afficher pour la série temporelle.
+          </p>
+        )}
+      </div>
+      <div className="border rounded shadow-md p-4 mt-4">
+        <h2 className="text-lg font-semibold mb-3">Comptage en fonction du Pic</h2>
+        {picChartData.length ? (
+          <Plot data={picChartData} layout={picLayout} className="w-full" />
+        ) : (
+          <p className="text-center text-sm text-gray-500">
+            Les valeurs de pic et de comptage sont manquantes ou invalides.
+          </p>
+        )}
       </div>
       <footer className="text-center text-sm text-gray-500 mt-3">DERS/UDI Designed</footer>
     </div>
