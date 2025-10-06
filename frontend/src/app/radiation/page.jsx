@@ -260,6 +260,9 @@ export default function RadiationDash() {
   return (
     <div className="min-h-screen bg-white p-2">
       <div className="flex justify-center mb-1">
+        <img className="w-16 h-16" src="cnesten.png" alt="" />
+      </div>
+      <div className="flex justify-center mb-1">
         <p className="text-2xl font-bold">Radiation project dashboard</p>
       </div>
       <div className="flex justify-end mb-2">
@@ -271,13 +274,13 @@ export default function RadiationDash() {
       <div className="grid grid-cols-3 gap-2 mb-2">
         <Input
           type="number"
-          placeholder="Vbas"
+          placeholder="LLD"
           value={values.Vbas}
           onChange={handleChange("Vbas")}
         />
         <Input
           type="number"
-          placeholder="Vhaut"
+          placeholder="HLD"
           value={values.Vhaut}
           onChange={handleChange("Vhaut")}
         />
@@ -301,6 +304,7 @@ export default function RadiationDash() {
       <div className="border rounded shadow-md p-4">
         <Plot data={chartData} layout={layout} className="w-full" />
       </div>
+      <footer className="text-center text-sm text-gray-500 mt-3">DERS/UDI Designed</footer>
     </div>
   );
 }
