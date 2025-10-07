@@ -3,12 +3,12 @@ import { Radiation } from "../models/Radiation.mjs";
 
 /**
  * Stores radiation values in the database.
- * @param {Object} req - Express request object expecting Vbas, Vhaut and Delta in body.
+ * @param {Object} req - Express request object expecting Vbas and Vhaut in body.
  * @param {Object} res - Express response object.
  */
 const addRadiationData = asyncHandler(async (req, res) => {
-  const { Vbas, Vhaut, Delta } = req.body;
-  const radiation = new Radiation({ Vbas, Vhaut, Delta });
+  const { Vbas, Vhaut } = req.body;
+  const radiation = new Radiation({ Vbas, Vhaut });
   await radiation.save();
   res.status(201).json(radiation);
 });

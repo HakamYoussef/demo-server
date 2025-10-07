@@ -13,7 +13,6 @@ radiation_collection = db["radiations"]
 radiation_document = {
     "Vbas": 0.12,
     "Vhaut": 0.34,
-    "Delta": 0.22,
     # timestamp will be automatically added by MongoDB if not provided
 }
 
