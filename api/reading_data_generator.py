@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pymongo import MongoClient
 
 # Replace with your MongoDB connection string
@@ -11,7 +13,9 @@ reading_collection = db["arduino_readings"]
 
 # Document to insert
 reading_document = {
-    "comptage": 123
+    "comptage": 123,
+    "pic": 45.6,
+    "time": datetime.utcnow()
 }
 
 # Insert the document into the collection
