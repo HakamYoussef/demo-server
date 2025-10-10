@@ -327,14 +327,19 @@ export default function RadiationDash() {
     }))
     .filter((entry) => entry.pic !== null && entry.comptage !== null);
 
-  const picChartData = picComptageEntries.length
+  const sortedPicComptageEntries = picComptageEntries
+    .slice()
+    .sort((a, b) => a.pic - b.pic);
+
+  const picChartData = sortedPicComptageEntries.length
     ? [
         {
-          x: picComptageEntries.map((entry) => entry.pic),
-          y: picComptageEntries.map((entry) => entry.comptage),
+          x: sortedPicComptageEntries.map((entry) => entry.pic),
+          y: sortedPicComptageEntries.map((entry) => entry.comptage),
           type: "scatter",
-          mode: "markers",
+          mode: "lines+markers",
           marker: { color: "#2563eb" },
+          line: { color: "#2563eb" },
         },
       ]
     : [];
@@ -354,8 +359,8 @@ export default function RadiationDash() {
   const picLayout = {
     ...basePlotLayout,
     title: "Comptage by Pic",
-    xaxis: { title: "Pic" },
-    yaxis: { title: "Comptage" },
+    xaxis: { title: "Pic", rangemode: "tozero" },
+    yaxis: { title: "Comptage", rangemode: "tozero" },
   };
 
   return (
