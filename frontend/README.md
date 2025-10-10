@@ -25,7 +25,7 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 The radiation dashboard consumes two backend endpoints:
 
 - `GET /api/v1/readings` (`http://213.199.35.129:5002/api/v1/readings`) for live radiation counts displayed on the chart.
-- `POST /api/radiation` (`http://213.199.35.129:5002/api/radiation`) to store the Vbas, Vhaut and Delta values.
+- `POST /api/radiation` (`http://213.199.35.129:5002/api/radiation`) to store the Vbas and Vhaut values.
 
 Set the following environment variables before running the frontend so the dashboard can reach these services in each environment:
 

@@ -18,10 +18,12 @@ const READINGS_ENDPOINT = `${apiBaseUrl}/api/v1/readings`;
 const RADIATION_ENDPOINT = `${apiBaseUrl}/api/radiation`;
 const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WS_URL?.trim();
 
+const getEntryTime = (entry) => entry?.time ?? entry?.timestamp ?? null;
+
 const sortByTimestamp = (entries) =>
   [...entries].sort((a, b) => {
-    const first = new Date(a?.timestamp || 0).getTime();
-    const second = new Date(b?.timestamp || 0).getTime();
+    const first = new Date(getEntryTime(a) || 0).getTime();
+    const second = new Date(getEntryTime(b) || 0).getTime();
     return first - second;
   });
 
@@ -29,7 +31,7 @@ export default function RadiationDash() {
   const router = useRouter();
   const { logout, token } = useAuthContext();
   const toast = useToast();
-  const [values, setValues] = useState({ Vbas: "", Vhaut: "", Delta: "" });
+  const [values, setValues] = useState({ Vbas: "", Vhaut: "" });
   const [radiationData, setRadiationData] = useState([]);
   const socketRef = useRef(null);
   const [isSending, setIsSending] = useState(false);
@@ -84,8 +86,11 @@ export default function RadiationDash() {
           return item._id === incoming._id;
         }
 
-        if (item?.timestamp && incoming?.timestamp) {
-          return item.timestamp === incoming.timestamp;
+        const itemTime = getEntryTime(item);
+        const incomingTime = getEntryTime(incoming);
+
+        if (itemTime && incomingTime) {
+          return new Date(itemTime).getTime() === new Date(incomingTime).getTime();
         }
 
         return false;
@@ -130,10 +135,10 @@ export default function RadiationDash() {
       return;
     }
 
-    if (values.Vbas === "" || values.Vhaut === "" || values.Delta === "") {
+    if (values.Vbas === "" || values.Vhaut === "") {
       showToast("missing-fields", {
         title: "All fields are required",
-        description: "Please provide Vbas, Vhaut and Delta before sending.",
+        description: "Please provide Vbas and Vhaut before sending.",
         status: "warning",
       });
       return;
@@ -142,13 +147,12 @@ export default function RadiationDash() {
     const parsedValues = {
       Vbas: Number(values.Vbas),
       Vhaut: Number(values.Vhaut),
-      Delta: Number(values.Delta),
     };
 
     if (Object.values(parsedValues).some((value) => Number.isNaN(value))) {
       showToast("invalid-numbers", {
         title: "Invalid values",
-        description: "Vbas, Vhaut and Delta must be valid numbers.",
+        description: "Vbas and Vhaut must be valid numbers.",
         status: "error",
       });
       return;
@@ -179,7 +183,7 @@ export default function RadiationDash() {
         isClosable: true,
         position: "bottom",
       });
-      setValues({ Vbas: "", Vhaut: "", Delta: "" });
+      setValues({ Vbas: "", Vhaut: "" });
     } catch (error) {
       console.error("Error sending radiation values:", error);
       showToast("send-error", {
@@ -248,15 +252,15 @@ export default function RadiationDash() {
 
   const timelinePoints = radiationData
     .map((entry) => ({
-      timestamp: entry?.timestamp,
+      time: getEntryTime(entry),
       comptage: asNumber(entry?.comptage),
     }))
-    .filter((entry) => entry.timestamp && entry.comptage !== null);
+    .filter((entry) => entry.time && entry.comptage !== null);
 
   const chartData = timelinePoints.length
     ? [
         {
-          x: timelinePoints.map((d) => new Date(d.timestamp).toLocaleTimeString()),
+          x: timelinePoints.map((d) => new Date(d.time).toLocaleTimeString()),
           y: timelinePoints.map((d) => d.comptage),
           type: "scatter",
           mode: "lines+markers",
@@ -310,7 +314,7 @@ export default function RadiationDash() {
           Logout
         </Button>
       </div>
-      <div className="grid grid-cols-3 gap-2 mb-2">
+      <div className="grid grid-cols-2 gap-2 mb-2">
         <Input
           type="number"
           placeholder="LLD"
@@ -322,12 +326,6 @@ export default function RadiationDash() {
           placeholder="HLD"
           value={values.Vhaut}
           onChange={handleChange("Vhaut")}
-        />
-        <Input
-          type="number"
-          placeholder="Delta"
-          value={values.Delta}
-          onChange={handleChange("Delta")}
         />
       </div>
       <div className="mb-2">
