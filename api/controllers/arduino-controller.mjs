@@ -64,16 +64,50 @@ const postComptage = async (req, res) => {
 };
 
 
+const asDate = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value;
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 const getComptage = async (req, res) => {
   try {
-    const readings = await ArduinoReading.find().sort({ time: 1 });
-    const normalized = readings.map((doc) => {
-      const entry = doc.toObject();
-      if (!entry.time && entry.timestamp) {
-        entry.time = entry.timestamp;
-      }
-      return entry;
-    });
+    const readings = await ArduinoReading.find().sort({ time: 1, _id: 1 }).lean();
+
+    const normalized = readings
+      .map((entry) => {
+        const normalizedEntry = { ...entry };
+
+        const derivedTime =
+          asDate(entry.time) ??
+          asDate(entry.timestamp) ??
+          (entry._id && typeof entry._id.getTimestamp === "function"
+            ? asDate(entry._id.getTimestamp())
+            : null);
+
+        if (derivedTime) {
+          const isoTime = derivedTime.toISOString();
+          normalizedEntry.time = isoTime;
+          if (!asDate(entry.timestamp)) {
+            normalizedEntry.timestamp = isoTime;
+          }
+        }
+
+        return normalizedEntry;
+      })
+      .sort((a, b) => {
+        const first = asDate(a.time) ?? new Date(0);
+        const second = asDate(b.time) ?? new Date(0);
+        return first.getTime() - second.getTime();
+      });
+
     res.json(normalized);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving data", error });
