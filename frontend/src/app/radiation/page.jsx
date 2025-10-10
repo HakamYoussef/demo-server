@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, useToast } from "@chakra-ui/react";
+import { Button, Input, Select, useToast } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "../context/authContext";
@@ -35,6 +35,7 @@ export default function RadiationDash() {
   const [radiationData, setRadiationData] = useState([]);
   const socketRef = useRef(null);
   const [isSending, setIsSending] = useState(false);
+  const [visualizationMode, setVisualizationMode] = useState("line");
 
   const showToast = useCallback(
     (id, options) => {
@@ -257,6 +258,16 @@ export default function RadiationDash() {
     }))
     .filter((entry) => entry.time && entry.comptage !== null);
 
+  const latestTimelinePoint =
+    timelinePoints.length > 0 ? timelinePoints[timelinePoints.length - 1] : null;
+
+  const maxComptage = timelinePoints.length
+    ? timelinePoints.reduce(
+        (maxValue, entry) => (entry.comptage > maxValue ? entry.comptage : maxValue),
+        Number.NEGATIVE_INFINITY
+      )
+    : null;
+
   const chartData = timelinePoints.length
     ? [
         {
@@ -268,6 +279,46 @@ export default function RadiationDash() {
         },
       ]
     : [];
+
+  const gaugeChartData =
+    latestTimelinePoint && maxComptage !== null && Number.isFinite(maxComptage)
+      ? [
+          {
+            type: "indicator",
+            mode: "gauge+number+delta",
+            value: latestTimelinePoint.comptage,
+            title: { text: "Comptage actuel" },
+            delta:
+              maxComptage > 0
+                ? {
+                    reference: maxComptage,
+                    increasing: { color: "#dc2626" },
+                    decreasing: { color: "#16a34a" },
+                  }
+                : undefined,
+            gauge: {
+              axis: { range: [0, Math.max(maxComptage, latestTimelinePoint.comptage || 0, 1)] },
+              bar: { color: "#22c55e" },
+              steps:
+                maxComptage > 0
+                  ? [
+                      { range: [0, maxComptage * 0.5], color: "#dcfce7" },
+                      { range: [maxComptage * 0.5, maxComptage * 0.8], color: "#bbf7d0" },
+                      { range: [maxComptage * 0.8, Math.max(maxComptage, latestTimelinePoint.comptage)], color: "#fde68a" },
+                    ]
+                  : undefined,
+              threshold:
+                maxComptage > 0
+                  ? {
+                      line: { color: "#ef4444", width: 4 },
+                      thickness: 0.75,
+                      value: maxComptage,
+                    }
+                  : undefined,
+            },
+          },
+        ]
+      : [];
 
   const picComptageEntries = radiationData
     .map((entry) => ({
@@ -290,7 +341,7 @@ export default function RadiationDash() {
 
   const basePlotLayout = {
     autosize: true,
-    margin: { l: 60, r: 30, t: 50, b: 60 },
+    margin: { l: 40, r: 20, t: 40, b: 50, pad: 4 },
   };
 
   const layout = {
@@ -347,19 +398,51 @@ export default function RadiationDash() {
       </div>
       <div className="grid gap-4 mt-4 lg:grid-cols-2">
         <div className="border rounded shadow-md p-4">
-          {chartData.length ? (
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Visualisation des comptages</h2>
+            <Select
+              value={visualizationMode}
+              onChange={(event) => setVisualizationMode(event.target.value)}
+              maxW="220px"
+              size="sm"
+            >
+              <option value="line">Courbe temporelle</option>
+              <option value="gauge">Jauge avec pic</option>
+            </Select>
+          </div>
+          {visualizationMode === "line" ? (
+            chartData.length ? (
+              <Plot
+                data={chartData}
+                layout={layout}
+                className="w-full"
+                useResizeHandler
+                style={{ width: "100%", height: "400px" }}
+              />
+            ) : (
+              <p className="text-center text-sm text-gray-500">
+                Aucun comptage valide à afficher pour la série temporelle.
+              </p>
+            )
+          ) : gaugeChartData.length ? (
             <Plot
-              data={chartData}
-              layout={layout}
+              data={gaugeChartData}
+              layout={{ ...basePlotLayout, margin: { l: 40, r: 40, t: 60, b: 30, pad: 4 } }}
               className="w-full"
               useResizeHandler
-              style={{ width: "100%", height: "100%" }}
+              style={{ width: "100%", height: "400px" }}
             />
           ) : (
             <p className="text-center text-sm text-gray-500">
-              Aucun comptage valide à afficher pour la série temporelle.
+              Pas de données suffisantes pour afficher la jauge et le pic.
             </p>
           )}
+          {visualizationMode === "gauge" && maxComptage !== null && Number.isFinite(maxComptage) ? (
+            <p className="mt-3 text-sm text-gray-600 text-center">
+              Pic enregistré&nbsp;: <span className="font-semibold">{maxComptage}</span> &mdash; Dernier comptage&nbsp;:
+              <span className="font-semibold"> {latestTimelinePoint?.comptage ?? "N/A"}</span>
+            </p>
+          ) : null}
         </div>
         <div className="border rounded shadow-md p-4">
           <h2 className="text-lg font-semibold mb-3">Comptage en fonction du Pic</h2>
@@ -369,7 +452,7 @@ export default function RadiationDash() {
               layout={picLayout}
               className="w-full"
               useResizeHandler
-              style={{ width: "100%", height: "100%" }}
+              style={{ width: "100%", height: "400px" }}
             />
           ) : (
             <p className="text-center text-sm text-gray-500">
