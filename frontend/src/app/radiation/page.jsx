@@ -396,7 +396,7 @@ export default function RadiationDash() {
           Send
         </Button>
       </div>
-      <div className="grid gap-4 mt-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 mt-4">
         <div className="border rounded shadow-md p-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Visualisation des comptages</h2>
