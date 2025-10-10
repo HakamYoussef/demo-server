@@ -288,13 +288,20 @@ export default function RadiationDash() {
       ]
     : [];
 
+  const basePlotLayout = {
+    autosize: true,
+    margin: { l: 60, r: 30, t: 50, b: 60 },
+  };
+
   const layout = {
+    ...basePlotLayout,
     title: "Radiation Chart",
     xaxis: { title: "Time" },
     yaxis: { title: "Value" },
   };
 
   const picLayout = {
+    ...basePlotLayout,
     title: "Comptage by Pic",
     xaxis: { title: "Pic" },
     yaxis: { title: "Comptage" },
@@ -338,24 +345,38 @@ export default function RadiationDash() {
           Send
         </Button>
       </div>
-      <div className="border rounded shadow-md p-4">
-        {chartData.length ? (
-          <Plot data={chartData} layout={layout} className="w-full" />
-        ) : (
-          <p className="text-center text-sm text-gray-500">
-            Aucun comptage valide à afficher pour la série temporelle.
-          </p>
-        )}
-      </div>
-      <div className="border rounded shadow-md p-4 mt-4">
-        <h2 className="text-lg font-semibold mb-3">Comptage en fonction du Pic</h2>
-        {picChartData.length ? (
-          <Plot data={picChartData} layout={picLayout} className="w-full" />
-        ) : (
-          <p className="text-center text-sm text-gray-500">
-            Les valeurs de pic et de comptage sont manquantes ou invalides.
-          </p>
-        )}
+      <div className="grid gap-4 mt-4 lg:grid-cols-2">
+        <div className="border rounded shadow-md p-4">
+          {chartData.length ? (
+            <Plot
+              data={chartData}
+              layout={layout}
+              className="w-full"
+              useResizeHandler
+              style={{ width: "100%", height: "100%" }}
+            />
+          ) : (
+            <p className="text-center text-sm text-gray-500">
+              Aucun comptage valide à afficher pour la série temporelle.
+            </p>
+          )}
+        </div>
+        <div className="border rounded shadow-md p-4">
+          <h2 className="text-lg font-semibold mb-3">Comptage en fonction du Pic</h2>
+          {picChartData.length ? (
+            <Plot
+              data={picChartData}
+              layout={picLayout}
+              className="w-full"
+              useResizeHandler
+              style={{ width: "100%", height: "100%" }}
+            />
+          ) : (
+            <p className="text-center text-sm text-gray-500">
+              Les valeurs de pic et de comptage sont manquantes ou invalides.
+            </p>
+          )}
+        </div>
       </div>
       <footer className="text-center text-sm text-gray-500 mt-3">DERS/UDI Designed</footer>
     </div>
