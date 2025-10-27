@@ -363,6 +363,12 @@ export default function RadiationDash() {
     yaxis: { title: "Comptage", rangemode: "tozero" },
   };
 
+  const latestEntry = radiationData.length ? radiationData[radiationData.length - 1] : null;
+  const latestComptageValue = asNumber(latestTimelinePoint?.comptage);
+  const latestPicValue = asNumber(latestEntry?.pic);
+  const formatIndicatorValue = (value) =>
+    value === null || Number.isNaN(value) ? "N/A" : value.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+
   return (
     <div className="min-h-screen bg-white p-2">
       <div className="flex justify-center mb-1">
@@ -372,34 +378,64 @@ export default function RadiationDash() {
         <p className="text-2xl font-bold">Radiation project dashboard</p>
       </div>
       <div className="flex justify-end mb-2">
-        
+
         <Button colorScheme="red" onClick={handleLogout}>
           Logout
         </Button>
       </div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <Input
-          type="number"
-          placeholder="LLD"
-          value={values.Vbas}
-          onChange={handleChange("Vbas")}
-        />
-        <Input
-          type="number"
-          placeholder="HLD"
-          value={values.Vhaut}
-          onChange={handleChange("Vhaut")}
-        />
-      </div>
-      <div className="mb-2">
-        <Button
-          colorScheme="green"
-          onClick={handleSend}
-          isLoading={isSending}
-          loadingText="Sending"
-        >
-          Send
-        </Button>
+      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
+        <div className="border rounded shadow-md p-4">
+          <h2 className="text-lg font-semibold mb-4">Control</h2>
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700">
+              HLD
+              <Input
+                type="number"
+                placeholder="HLD"
+                value={values.Vhaut}
+                onChange={handleChange("Vhaut")}
+                className="mt-1"
+              />
+            </label>
+            <label className="block text-sm font-medium text-gray-700">
+              LLD
+              <Input
+                type="number"
+                placeholder="LLD"
+                value={values.Vbas}
+                onChange={handleChange("Vbas")}
+                className="mt-1"
+              />
+            </label>
+            <div className="flex justify-end">
+              <Button
+                colorScheme="green"
+                onClick={handleSend}
+                isLoading={isSending}
+                loadingText="Sending"
+              >
+                Send
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="border rounded shadow-md p-4">
+          <h2 className="text-lg font-semibold mb-4">Indicator</h2>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-gray-600">Comptage CPS</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {formatIndicatorValue(latestComptageValue)}
+              </p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-gray-600">Pic</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {formatIndicatorValue(latestPicValue)}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-4 mt-4">
         <div className="border rounded shadow-md p-4">
