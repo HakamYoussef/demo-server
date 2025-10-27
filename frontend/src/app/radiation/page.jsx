@@ -371,7 +371,7 @@ export default function RadiationDash() {
 
   return (
     <div className="min-h-screen bg-white p-2">
-      <div className="flex items-center justify-between gap-4 mb-4">
+      <div className="flex items-center justify-between gap-4 mb-2">
         <img
           className="w-20 h-20 object-contain"
           src="cnesten.png"
@@ -386,24 +386,24 @@ export default function RadiationDash() {
         </div>
         <img
           className="w-20 h-20 object-contain"
-          src="radioactive.png"
+          src="radioactivite.png"
           alt="Radioactive image"
         />
       </div>
-      <div className="flex flex-col gap-2 mb-2 md:flex-row md:items-center md:justify-between">
-        <p className="text-2xl font-bold text-gray-800">Radiation project dashboard</p>
+      <div className="flex flex-col gap-1 mb-2 md:flex-row md:items-center md:justify-between">
+        
         <div className="flex justify-end">
           <Button colorScheme="red" onClick={handleLogout}>
             Logout
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
-        <div className="border rounded shadow-md p-4">
-          <h2 className="text-lg font-semibold mb-4">Control</h2>
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-gray-700">
-              HLD
+      <div className="grid grid-cols-1 gap-1 mb-1 md:grid-cols-2">
+        <div className="border rounded shadow-md p-2">
+          <h2 className="text-lg font-semibold mb-2">Control</h2>
+          <div className="space-y-1">
+            <label className="block text-lg font-semibold text-gray-700">
+            Higher Level Discriminator 
               <Input
                 type="number"
                 placeholder="HLD"
@@ -412,8 +412,8 @@ export default function RadiationDash() {
                 className="mt-1"
               />
             </label>
-            <label className="block text-sm font-medium text-gray-700">
-              LLD
+            <label className="block text-lg font-semibold text-gray-700">
+            Lower Level Discriminator
               <Input
                 type="number"
                 placeholder="LLD"
@@ -434,19 +434,19 @@ export default function RadiationDash() {
             </div>
           </div>
         </div>
-        <div className="border rounded shadow-md p-4">
-          <h2 className="text-lg font-semibold mb-4">Indicator</h2>
-          <div className="space-y-3">
+        <div className="border rounded shadow-md p-2">
+          <h2 className="text-lg font-semibold mb-2">Indicator</h2>
+          <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-600">Comptage CPS</p>
+              <p className="text-lg font-semibold text-gray-600">Comptage CPS</p>
               <p className="text-lg font-semibold text-gray-900">
                 {formatIndicatorValue(latestComptageValue)}
               </p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-600">Pic</p>
+              <p className="text-lg font-semibold text-gray-600">Pic</p>
               <p className="text-lg font-semibold text-gray-900">
-                {formatIndicatorValue(latestPicValue)}
+                {formatIndicatorValue(latestPicValue)} Volts
               </p>
             </div>
           </div>
