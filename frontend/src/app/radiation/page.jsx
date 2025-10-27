@@ -261,6 +261,11 @@ export default function RadiationDash() {
   const latestTimelinePoint =
     timelinePoints.length > 0 ? timelinePoints[timelinePoints.length - 1] : null;
 
+  const latestPicEntry = radiationData
+    .slice()
+    .reverse()
+    .find((entry) => asNumber(entry?.pic) !== null);
+
   const maxComptage = timelinePoints.length
     ? timelinePoints.reduce(
         (maxValue, entry) => (entry.comptage > maxValue ? entry.comptage : maxValue),
@@ -364,109 +369,188 @@ export default function RadiationDash() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-2">
-      <div className="flex justify-center mb-1">
-        <img className="w-16 h-16" src="cnesten.png" alt="" />
-      </div>
-      <div className="flex justify-center mb-1">
-        <p className="text-2xl font-bold">Radiation project dashboard</p>
-      </div>
-      <div className="flex justify-end mb-2">
-        
-        <Button colorScheme="red" onClick={handleLogout}>
-          Logout
-        </Button>
-      </div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <Input
-          type="number"
-          placeholder="LLD"
-          value={values.Vbas}
-          onChange={handleChange("Vbas")}
-        />
-        <Input
-          type="number"
-          placeholder="HLD"
-          value={values.Vhaut}
-          onChange={handleChange("Vhaut")}
-        />
-      </div>
-      <div className="mb-2">
-        <Button
-          colorScheme="green"
-          onClick={handleSend}
-          isLoading={isSending}
-          loadingText="Sending"
-        >
-          Send
-        </Button>
-      </div>
-      <div className="grid grid-cols-1 gap-4 mt-4">
-        <div className="border rounded shadow-md p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold">Visualisation des comptages</h2>
-            <Select
-              value={visualizationMode}
-              onChange={(event) => setVisualizationMode(event.target.value)}
-              maxW="220px"
-              size="sm"
-            >
-              <option value="line">Courbe temporelle</option>
-              <option value="gauge">Jauge avec pic</option>
-            </Select>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <img className="h-14 w-14 rounded-lg border border-slate-800 bg-slate-900 p-2" src="cnesten.png" alt="CNESTEN logo" />
+            <div>
+              <p className="text-2xl font-semibold tracking-wide">Radiation project dashboard</p>
+              <p className="text-sm text-slate-400">Suivi en temps réel des mesures et indicateurs critiques</p>
+            </div>
           </div>
-          {visualizationMode === "line" ? (
-            chartData.length ? (
-              <Plot
-                data={chartData}
-                layout={layout}
-                className="w-full"
-                useResizeHandler
-                style={{ width: "100%", height: "400px" }}
-              />
-            ) : (
-              <p className="text-center text-sm text-gray-500">
-                Aucun comptage valide à afficher pour la série temporelle.
+          <Button colorScheme="red" onClick={handleLogout} className="self-start sm:self-auto">
+            Logout
+          </Button>
+        </header>
+
+        <section className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-xl shadow-slate-950/40 backdrop-blur">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold uppercase tracking-[0.2em] text-slate-300">Control</h2>
+              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium uppercase text-emerald-300">
+                Manual override
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-slate-400">
+              Ajustez les seuils bas et hauts pour affiner la surveillance des capteurs.
+            </p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="radiation-lld">
+                  LLD
+                </label>
+                <Input
+                  id="radiation-lld"
+                  type="number"
+                  placeholder="Entrer la valeur LLD"
+                  value={values.Vbas}
+                  onChange={handleChange("Vbas")}
+                  variant="filled"
+                  size="md"
+                  focusBorderColor="green.400"
+                  className="bg-slate-950/70 text-slate-100"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="radiation-hld">
+                  HLD
+                </label>
+                <Input
+                  id="radiation-hld"
+                  type="number"
+                  placeholder="Entrer la valeur HLD"
+                  value={values.Vhaut}
+                  onChange={handleChange("Vhaut")}
+                  variant="filled"
+                  size="md"
+                  focusBorderColor="green.400"
+                  className="bg-slate-950/70 text-slate-100"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-slate-500">
+                Les valeurs seront transmises immédiatement au système de contrôle.
               </p>
-            )
-          ) : gaugeChartData.length ? (
-            <Plot
-              data={gaugeChartData}
-              layout={{ ...basePlotLayout, margin: { l: 40, r: 40, t: 60, b: 30, pad: 4 } }}
-              className="w-full"
-              useResizeHandler
-              style={{ width: "100%", height: "400px" }}
-            />
-          ) : (
-            <p className="text-center text-sm text-gray-500">
-              Pas de données suffisantes pour afficher la jauge et le pic.
+              <Button
+                colorScheme="green"
+                onClick={handleSend}
+                isLoading={isSending}
+                loadingText="Sending"
+                className="min-w-[120px] justify-center"
+              >
+                Send
+              </Button>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-slate-900 to-slate-950 p-5 shadow-xl shadow-slate-950/40">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold uppercase tracking-[0.2em] text-slate-300">Indicator</h2>
+              <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium uppercase text-blue-300">
+                Live feed
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-slate-400">
+              Dernières mesures issues du flux de données temps réel.
             </p>
-          )}
-          {visualizationMode === "gauge" && maxComptage !== null && Number.isFinite(maxComptage) ? (
-            <p className="mt-3 text-sm text-gray-600 text-center">
-              Pic enregistré&nbsp;: <span className="font-semibold">{maxComptage}</span> &mdash; Dernier comptage&nbsp;:
-              <span className="font-semibold"> {latestTimelinePoint?.comptage ?? "N/A"}</span>
-            </p>
-          ) : null}
-        </div>
-        <div className="border rounded shadow-md p-4">
-          <h2 className="text-lg font-semibold mb-3">Comptage en fonction du Pic</h2>
-          {picChartData.length ? (
-            <Plot
-              data={picChartData}
-              layout={picLayout}
-              className="w-full"
-              useResizeHandler
-              style={{ width: "100%", height: "400px" }}
-            />
-          ) : (
-            <p className="text-center text-sm text-gray-500">
-              Les valeurs de pic et de comptage sont manquantes ou invalides.
-            </p>
-          )}
-        </div>
+            <div className="mt-6 flex flex-col gap-4">
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">Comptage CPS</p>
+                <p className="mt-2 text-3xl font-semibold text-slate-100">
+                  {latestTimelinePoint?.comptage ?? "N/A"}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">Valeur actuelle issue de la dernière mesure reçue.</p>
+              </div>
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">Pic</p>
+                <p className="mt-2 text-3xl font-semibold text-slate-100">
+                  {latestPicEntry ? asNumber(latestPicEntry.pic) : "N/A"}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">Dernier pic valide détecté dans l&apos;historique récent.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid gap-4 pb-4">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl shadow-slate-950/40">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-lg font-semibold text-slate-200">Visualisation des comptages</h2>
+              <Select
+                value={visualizationMode}
+                onChange={(event) => setVisualizationMode(event.target.value)}
+                maxW="240px"
+                size="sm"
+                focusBorderColor="green.400"
+                className="bg-slate-950/80 text-slate-100"
+              >
+                <option value="line">Courbe temporelle</option>
+                <option value="gauge">Jauge avec pic</option>
+              </Select>
+            </div>
+            <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/50 p-3">
+              {visualizationMode === "line" ? (
+                chartData.length ? (
+                  <Plot
+                    data={chartData}
+                    layout={layout}
+                    className="w-full"
+                    useResizeHandler
+                    style={{ width: "100%", height: "400px" }}
+                  />
+                ) : (
+                  <p className="text-center text-sm text-slate-500">
+                    Aucun comptage valide à afficher pour la série temporelle.
+                  </p>
+                )
+              ) : gaugeChartData.length ? (
+                <Plot
+                  data={gaugeChartData}
+                  layout={{ ...basePlotLayout, margin: { l: 40, r: 40, t: 60, b: 30, pad: 4 } }}
+                  className="w-full"
+                  useResizeHandler
+                  style={{ width: "100%", height: "400px" }}
+                />
+              ) : (
+                <p className="text-center text-sm text-slate-500">
+                  Pas de données suffisantes pour afficher la jauge et le pic.
+                </p>
+              )}
+            </div>
+            {visualizationMode === "gauge" && maxComptage !== null && Number.isFinite(maxComptage) ? (
+              <p className="mt-4 text-xs text-slate-500 sm:text-center">
+                Pic enregistré&nbsp;: <span className="font-semibold text-slate-200">{maxComptage}</span> &mdash; Dernier comptage&nbsp;:
+                <span className="font-semibold text-slate-200"> {latestTimelinePoint?.comptage ?? "N/A"}</span>
+              </p>
+            ) : null}
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl shadow-slate-950/40">
+            <h2 className="text-lg font-semibold text-slate-200">Comptage en fonction du Pic</h2>
+            <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/50 p-3">
+              {picChartData.length ? (
+                <Plot
+                  data={picChartData}
+                  layout={picLayout}
+                  className="w-full"
+                  useResizeHandler
+                  style={{ width: "100%", height: "400px" }}
+                />
+              ) : (
+                <p className="text-center text-sm text-slate-500">
+                  Les valeurs de pic et de comptage sont manquantes ou invalides.
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <footer className="pb-4 text-center text-xs uppercase tracking-[0.35em] text-slate-600">
+          DERS/UDI Designed
+        </footer>
       </div>
-      <footer className="text-center text-sm text-gray-500 mt-3">DERS/UDI Designed</footer>
     </div>
   );
 }
