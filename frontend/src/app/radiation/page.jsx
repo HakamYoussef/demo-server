@@ -261,6 +261,11 @@ export default function RadiationDash() {
   const latestTimelinePoint =
     timelinePoints.length > 0 ? timelinePoints[timelinePoints.length - 1] : null;
 
+  const latestPicEntry = radiationData
+    .slice()
+    .reverse()
+    .find((entry) => asNumber(entry?.pic) !== null);
+
   const maxComptage = timelinePoints.length
     ? timelinePoints.reduce(
         (maxValue, entry) => (entry.comptage > maxValue ? entry.comptage : maxValue),
@@ -377,29 +382,63 @@ export default function RadiationDash() {
           Logout
         </Button>
       </div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <Input
-          type="number"
-          placeholder="LLD"
-          value={values.Vbas}
-          onChange={handleChange("Vbas")}
-        />
-        <Input
-          type="number"
-          placeholder="HLD"
-          value={values.Vhaut}
-          onChange={handleChange("Vhaut")}
-        />
-      </div>
-      <div className="mb-2">
-        <Button
-          colorScheme="green"
-          onClick={handleSend}
-          isLoading={isSending}
-          loadingText="Sending"
-        >
-          Send
-        </Button>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mb-4">
+        <div className="border rounded shadow-md p-4 flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Control</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600" htmlFor="radiation-lld">
+                LLD
+              </label>
+              <Input
+                id="radiation-lld"
+                type="number"
+                placeholder="Enter LLD"
+                value={values.Vbas}
+                onChange={handleChange("Vbas")}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600" htmlFor="radiation-hld">
+                HLD
+              </label>
+              <Input
+                id="radiation-hld"
+                type="number"
+                placeholder="Enter HLD"
+                value={values.Vhaut}
+                onChange={handleChange("Vhaut")}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button
+              colorScheme="green"
+              onClick={handleSend}
+              isLoading={isSending}
+              loadingText="Sending"
+            >
+              Send
+            </Button>
+          </div>
+        </div>
+        <div className="border rounded shadow-md p-4 flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Indicator</h2>
+          <div className="flex flex-col gap-2 text-sm text-gray-600">
+            <div className="flex items-center justify-between rounded bg-gray-50 px-3 py-2">
+              <span className="font-medium uppercase tracking-wide text-gray-500">Comptage CPS</span>
+              <span className="text-base font-semibold text-gray-900">
+                {latestTimelinePoint?.comptage ?? "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded bg-gray-50 px-3 py-2">
+              <span className="font-medium uppercase tracking-wide text-gray-500">Pic</span>
+              <span className="text-base font-semibold text-gray-900">
+                {latestPicEntry ? asNumber(latestPicEntry.pic) : "N/A"}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-4 mt-4">
         <div className="border rounded shadow-md p-4">
