@@ -372,11 +372,14 @@ export default function RadiationDash() {
   return (
     <div className="min-h-screen bg-white p-2">
       <div className="flex items-center justify-between gap-4 mb-2">
-        <img
-          className="w-20 h-20 object-contain"
-          src="cnesten.png"
-          alt="CNESTEN logo"
-        />
+        <div className="flex flex-col items-center">
+          <img
+            className="w-20 h-20 object-contain"
+            src="cnesten.png"
+            alt="CNESTEN logo"
+          />
+          <p className="mt-1 text-sm font-semibold text-gray-700">CNESTEN</p>
+        </div>
         <div className="flex-1">
           <div className="h-14 rounded-full bg-green-600 flex items-center justify-center px-4">
             <p className="text-xl md:text-2xl font-semibold tracking-wide text-white text-center">
@@ -384,11 +387,14 @@ export default function RadiationDash() {
             </p>
           </div>
         </div>
-        <img
-          className="w-20 h-20 object-contain"
-          src="radioactivite.png"
-          alt="Radioactive image"
-        />
+        <div className="flex flex-col items-center">
+          <img
+            className="w-20 h-20 object-contain"
+            src="radioactivite.png"
+            alt="Radioactive image"
+          />
+          <p className="mt-1 text-sm font-semibold text-gray-700">DERS/UDI</p>
+        </div>
       </div>
       <div className="flex flex-col gap-1 mb-2 md:flex-row md:items-center md:justify-between">
         
@@ -400,7 +406,7 @@ export default function RadiationDash() {
       </div>
       <div className="grid grid-cols-1 gap-1 mb-1 md:grid-cols-2">
         <div className="border rounded shadow-md p-2">
-          <h2 className="text-lg font-semibold mb-2">Control</h2>
+          <h2 className="text-lg font-semibold mb-2 text-center">Control</h2>
           <div className="space-y-1">
             <label className="block text-lg font-semibold text-gray-700">
             Higher Level Discriminator 
@@ -435,7 +441,7 @@ export default function RadiationDash() {
           </div>
         </div>
         <div className="border rounded shadow-md p-2">
-          <h2 className="text-lg font-semibold mb-2">Indicator</h2>
+          <h2 className="text-lg font-semibold mb-2 text-center">Indicator</h2>
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold text-gray-600">Comptage CPS</p>
