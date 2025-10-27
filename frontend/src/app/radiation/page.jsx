@@ -371,17 +371,32 @@ export default function RadiationDash() {
 
   return (
     <div className="min-h-screen bg-white p-2">
-      <div className="flex justify-center mb-1">
-        <img className="w-16 h-16" src="cnesten.png" alt="" />
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <img
+          className="w-20 h-20 object-contain"
+          src="cnesten.png"
+          alt="CNESTEN logo"
+        />
+        <div className="flex-1">
+          <div className="h-14 rounded-full bg-green-600 flex items-center justify-center px-4">
+            <p className="text-xl md:text-2xl font-semibold tracking-wide text-white text-center">
+              SCA IoT-Monitoring
+            </p>
+          </div>
+        </div>
+        <img
+          className="w-20 h-20 object-contain"
+          src="radioactive.png"
+          alt="Radioactive image"
+        />
       </div>
-      <div className="flex justify-center mb-1">
-        <p className="text-2xl font-bold">Radiation project dashboard</p>
-      </div>
-      <div className="flex justify-end mb-2">
-
-        <Button colorScheme="red" onClick={handleLogout}>
-          Logout
-        </Button>
+      <div className="flex flex-col gap-2 mb-2 md:flex-row md:items-center md:justify-between">
+        <p className="text-2xl font-bold text-gray-800">Radiation project dashboard</p>
+        <div className="flex justify-end">
+          <Button colorScheme="red" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
         <div className="border rounded shadow-md p-4">
