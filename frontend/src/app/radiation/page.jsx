@@ -471,7 +471,7 @@ export default function RadiationDash() {
               </p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold text-gray-600">Pic</p>
+              <p className="text-lg font-semibold text-gray-600">Amplitude</p>
               <p className="text-lg font-semibold text-gray-900">
                 {formatIndicatorValue(latestPicValue)} Volts
               </p>
@@ -479,7 +479,7 @@ export default function RadiationDash() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 mt-4">
+      <div className="grid grid-cols-1 gap-4 mt-2">
         <div className="border rounded shadow-md p-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Visualisation des comptages</h2>
@@ -490,7 +490,7 @@ export default function RadiationDash() {
               size="sm"
             >
               <option value="line">Courbe temporelle</option>
-              <option value="gauge">Jauge avec pic</option>
+              <option value="gauge">Jauge</option>
             </Select>
           </div>
           {visualizationMode === "line" ? (
