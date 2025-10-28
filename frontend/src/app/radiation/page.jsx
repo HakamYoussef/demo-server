@@ -36,6 +36,7 @@ export default function RadiationDash() {
   const socketRef = useRef(null);
   const [isSending, setIsSending] = useState(false);
   const [visualizationMode, setVisualizationMode] = useState("line");
+  const [countInterval, setCountInterval] = useState("second");
 
   const showToast = useCallback(
     (id, options) => {
@@ -365,6 +366,12 @@ export default function RadiationDash() {
 
   const latestEntry = radiationData.length ? radiationData[radiationData.length - 1] : null;
   const latestComptageValue = asNumber(latestTimelinePoint?.comptage);
+  const latestIntensityValue =
+    latestComptageValue === null
+      ? null
+      : countInterval === "second"
+      ? latestComptageValue
+      : latestComptageValue * 60;
   const latestPicValue = asNumber(latestEntry?.pic);
   const formatIndicatorValue = (value) =>
     value === null || Number.isNaN(value) ? "N/A" : value.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
@@ -443,10 +450,24 @@ export default function RadiationDash() {
         <div className="border rounded shadow-md p-2">
           <h2 className="text-lg font-semibold mb-2 text-center">Indicator</h2>
           <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold text-gray-600">Comptage CPS</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {formatIndicatorValue(latestComptageValue)}
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-lg font-semibold text-gray-600">Radiation intensity</p>
+                <Select
+                  size="sm"
+                  value={countInterval}
+                  onChange={(event) => setCountInterval(event.target.value)}
+                  mt={1}
+                >
+                  <option value="second">per second</option>
+                  <option value="minute">per minute</option>
+                </Select>
+              </div>
+              <p className="text-lg font-semibold text-gray-900 text-right">
+                {formatIndicatorValue(latestIntensityValue)}
+                <span className="block text-sm font-medium text-gray-500">
+                  {countInterval === "second" ? "count per second" : "count per minute"}
+                </span>
               </p>
             </div>
             <div className="flex items-center justify-between">
