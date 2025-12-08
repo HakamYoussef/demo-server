@@ -6,7 +6,7 @@ import cors from "cors";
 import capteurRouter from "./routes/capteurs-routes.mjs";
 import dotenv from "dotenv";
 dotenv.config();
-import { WebSocketServer } from "ws";
+import { Server } from "socket.io";
 
 import { fetchLatestData, getLatestData } from "./controllers/capteurs-controller.mjs";
 import adminRouter from "./routes/admin.mjs";
@@ -51,21 +51,25 @@ mongoose
       console.log(`Server is running on port ${PORT}`);
     });
 
-    // Setup WebSocket server
-    const wss = new WebSocketServer({ server });
+    const io = new Server(server, {
+      cors: {
+        origin: "*", // Allow all origins
+        methods: ["GET", "POST"]
+      }
+    });
 
-    wss.on('connection', (ws) => {
+    io.on('connection', (socket) => {
       console.log('Client connected');
-      ws.send(JSON.stringify({ message: 'Connection successful' }));
+      socket.emit('message', 'Connection successful');
 
       // Function to fetch and send the latest data
       const sendData = async () => {
         try {
           const latestData = await fetchLatestData();
-          ws.send(JSON.stringify(latestData));
+          socket.emit('radiationData', latestData);
         } catch (error) {
           console.error('Error fetching latest data:', error);
-          ws.send(JSON.stringify({ error: 'Error fetching latest data' }));
+          socket.emit('error', 'Error fetching latest data');
         }
       };
 
@@ -75,15 +79,9 @@ mongoose
       const intervalId = setInterval(sendData, 2000);
 
       // Handle WebSocket disconnection
-      ws.on('close', () => {
+      socket.on('disconnect', () => {
         console.log('Client disconnected');
         clearInterval(intervalId);
-      });
-
-      // Handle WebSocket errors
-      ws.on('error', (error) => {
-        console.error('WebSocket error:', error);
-        clearInterval(intervalId); 
       });
     });
   })
