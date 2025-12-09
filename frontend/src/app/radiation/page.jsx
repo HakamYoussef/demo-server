@@ -5,8 +5,9 @@ import { io } from "socket.io-client";
 import { Button, Input, Select, useToast } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "../context/authContext";
 import { useCallback, useEffect, useRef, useState } from "react";
+import protectedRoute from "../components/protectedRoute";
+import { useAuthContext } from "../context/authContext";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
@@ -45,7 +46,7 @@ const sortByTimestamp = (entries) =>
     return first - second;
   });
 
-export default function RadiationDash() {
+function RadiationDash() {
   const router = useRouter();
   const { logout, token } = useAuthContext();
   const toast = useToast();
@@ -514,6 +515,8 @@ export default function RadiationDash() {
     </div>
   );
 }
+
+export default protectedRoute(RadiationDash);
 
 
 
