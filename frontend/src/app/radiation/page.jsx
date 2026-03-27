@@ -432,7 +432,7 @@ function RadiationDash() {
                 className="w-full"
                 size="lg"
               >
-                Send Values
+                Confirm
               </Button>
             </div>
 
