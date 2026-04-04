@@ -1,56 +1,51 @@
 import asyncHandler from "express-async-handler";
-import { Radiation } from "../models/Radiation.mjs";       // Pour Vbas, Vhaut
-import { ArduinoReading } from "../models/ArduinoReading.mjs"; // Pour comptage, pic
+import { Radiation } from "../models/Radiation.mjs";       // Collection pour les seuils
+import { ArduinoReading } from "../models/ArduinoReading.mjs"; // Collection pour les mesures
 
 /**
- * UNIQUE POST : Reçoit tout de l'ESP32, enregistre dans 2 collections 
- * et envoie en temps réel au Web.
+ * POST : L'ESP32 envoie le comptage et le pic.
+ * Cette fonction enregistre en base et POUSSE l'info vers le Web en temps réel.
  */
 const addRadiationData = asyncHandler(async (req, res) => {
-  // 1. L'ESP32 envoie tout dans le corps (body) de la requête
-  const { Vbas, Vhaut, comptage, pic } = req.body;
+  const { comptage, pic } = req.body;
 
-  // 2. Enregistrement dans la collection 'radiations' (Schéma 1)
-  const radiationEntry = new Radiation({ 
-    Vbas, 
-    Vhaut 
-  });
-  const savedRadiation = await radiationEntry.save();
-
-  // 3. Enregistrement dans la collection 'arduino_readings' (Schéma 2)
+  // 1. Sauvegarde de la mesure dans 'arduino_readings'
   const readingEntry = new ArduinoReading({ 
     comptage, 
-    pic 
+    pic,
+    time: new Date()
   });
   const savedReading = await readingEntry.save();
 
-  // 4. --- ENVOI TEMPS RÉEL VIA SOCKET.IO ---
+  // 2. --- ENVOI TEMPS RÉEL (SOCKET.IO) ---
+  // On récupère 'io' définit dans app.mjs
   const io = req.app.get("socketio");
+  
   if (io) {
-    // On crée un objet unique pour le Front-end avec TOUTES les infos
-    const dataForWeb = {
-      Vbas: savedRadiation.Vbas,
-      Vhaut: savedRadiation.Vhaut,
-      comptage: savedReading.comptage,
-      pic: savedReading.pic,
-      time: savedReading.time // Date de la mesure
-    };
-
-    io.emit("radiationData", dataForWeb);
-    console.log(`[Push] Donnée envoyée au Web : CPS=${comptage}`);
+    // On envoie la donnée immédiatement au navigateur pour le graphique
+    io.emit("radiationData", savedReading);
+    console.log(`[Socket.io] Envoi au Web -> CPS: ${comptage}`);
   }
 
-  // 5. Réponse à l'ESP32 (201 Created)
-  res.status(201).json({ message: "Success", radiation: savedRadiation, reading: savedReading });
+  res.status(201).json(savedReading);
 });
 
 /**
- * GET : Récupère l'historique pour l'affichage initial de la page
+ * GET : L'ESP32 demande les seuils OU le Web demande l'historique.
  */
 const getRadiationData = asyncHandler(async (req, res) => {
-  // On récupère les mesures les plus récentes
-  const data = await ArduinoReading.find().sort({ time: -1 }).limit(100);
-  res.status(200).json(data);
+  // 1. On cherche le dernier réglage de seuil enregistré dans la collection 'radiations'
+  const lastConfig = await Radiation.findOne().sort({ timestamp: -1 });
+
+  // 2. Si c'est l'ESP32 qui demande, on lui envoie les seuils
+  // Si c'est le Web qui demande l'historique, on peut aussi renvoyer les mesures
+  if (req.query.target === 'esp') {
+      return res.status(200).json(lastConfig);
+  }
+
+  // Par défaut, renvoie les 100 dernières mesures pour le site Web
+  const history = await ArduinoReading.find().sort({ time: -1 }).limit(100);
+  res.status(200).json(history);
 });
 
 export { addRadiationData, getRadiationData };
