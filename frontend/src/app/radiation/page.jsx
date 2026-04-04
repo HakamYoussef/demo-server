@@ -177,7 +177,7 @@ function RadiationDash() {
           <h2 className="font-bold mb-4 flex items-center gap-2"><MdOutlineTune /> Configuration</h2>
           <Input placeholder="Vbas (LLD)" mb={3} type="number" value={values.Vbas} onChange={(e) => setValues({...values, Vbas: e.target.value})} />
           <Input placeholder="Delta V" mb={4} type="number" value={values.deltaV} onChange={(e) => setValues({...values, deltaV: e.target.value})} />
-          <Button colorScheme="purple" w="full" onClick={handleSend} isLoading={isSending}>Appliquer</Button>
+          <Button colorScheme="purple" w="full" onClick={handleSend} isLoading={isSending}>Confirme</Button>
 
           <div className="mt-8 space-y-4">
              <div className="p-4 bg-purple-50 rounded-xl">
