@@ -53,16 +53,34 @@ io.on('connection', (socket) => {
 
   // On envoie les données actuelles immédiatement à la connexion
   fetchLatestData()
-    .then(data => socket.emit('radiationData', data))
+    .then(data => {
+      socket.emit('sensorData', data);
+      socket.emit('radiationData', data);
+    })
     .catch(err => console.error(err));
 
-  // --- LE SETINTERVAL A ÉTÉ SUPPRIMÉ ---
-  // La mise à jour se fera désormais via io.emit() dans vos contrôleurs
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });
 });
+
+// Python inserts directly into MongoDB; poll to broadcast those readings too.
+let sensorPollInProgress = false;
+const sensorPollTimer = setInterval(async () => {
+  if (sensorPollInProgress || io.engine.clientsCount === 0) return;
+  sensorPollInProgress = true;
+  try {
+    const data = await fetchLatestData();
+    io.emit("sensorData", data);
+  } catch (error) {
+    console.error("Failed to broadcast sensor readings:", error.message);
+  } finally {
+    sensorPollInProgress = false;
+  }
+}, 5000);
+sensorPollTimer.unref();
+httpServer.on("close", () => clearInterval(sensorPollTimer));
 
 // Error handling
 app.use((req, res, next) => {
@@ -78,7 +96,7 @@ app.use((error, req, res, next) => {
 
 // Connect to MongoDB and start the server
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb+srv://fatimaeddaoudi:fatimaD147011474@cluster0.vkuykr8.mongodb.net/arduino_data_db")
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     // 4. ÉCOUTER VIA HTTPSERVER ET NON APP
     httpServer.listen(PORT, () => {

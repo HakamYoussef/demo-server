@@ -1,3 +1,4 @@
+import os
 import pymongo
 from pymongo import MongoClient
 from datetime import datetime, timedelta
@@ -6,7 +7,7 @@ import json
 import time
 
 # MongoDB connection parameters
-MONGO_URI = 'mongodb+srv://fatimaeddaoudi:fatimaD147011474@cluster0.vkuykr8.mongodb.net/arduino_data_db'  # Adjust as needed
+MONGO_URI = os.environ["MONGODB_URI"]
 DB_NAME = 'arduino_data_db'
 COLLECTION_NAME = 'sensor_readings'
 
@@ -106,7 +107,7 @@ def generate_random_readings(timestamp):
 if __name__ == "__main__":
     i = 0
     while True:
-        timestamp = initial_timestamp + timedelta(minutes=5 * i)
+        timestamp = datetime.utcnow()
         document = generate_random_readings(timestamp)
         result = collection.insert_one(document)
         inserted_id = result.inserted_id
