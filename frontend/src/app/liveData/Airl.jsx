@@ -1,4 +1,5 @@
 "use client";
+import { io } from "socket.io-client";
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useAuthContext } from "../context/authContext";
@@ -70,32 +71,20 @@ const Card = () => {
   }, [token, toast]);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://213.199.35.129:5002");
+    const socket = io(
+      process.env.NEXT_PUBLIC_SENSOR_API_URL || "http://213.199.35.129:5002"
+    );
 
-    socket.onopen = () => {
-      console.log("WebSocket connection established");
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const latestData = JSON.parse(event.data);
+    socket.on("sensorData", (latestData) => {
+      if (latestData && typeof latestData === "object" && !Array.isArray(latestData)) {
         setData(latestData);
-      } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
       }
-    };
+    });
+    socket.on("connect_error", (error) => {
+      console.error("Sensor connection error:", error.message);
+    });
 
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    socket.onclose = (event) => {
-      console.log("WebSocket connection closed:", event);
-    };
-
-    return () => {
-      socket.close();
-    };
+    return () => socket.disconnect();
   }, []);
 
   useEffect(() => {
