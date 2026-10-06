@@ -22,9 +22,9 @@ const page = () => {
   }, [data]);
   return (
     <div>
-      <div className="flex">
+      <div className="min-h-screen pt-[90px]">
         <Navbar />
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0 w-full max-w-7xl mx-auto px-4">
           <div className="flex">
             <a href="/air">
               <TbArrowBackUp size={40} className="bg-black text-white " />
@@ -35,7 +35,7 @@ const page = () => {
               Capteurs d'humidité
             </h1>
           </div>
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-1 pl-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.keys(data).map((key, index) => {
               if (key.startsWith("HH")) {
                 return (
@@ -59,7 +59,7 @@ const page = () => {
               Capteurs de température
             </h1>
           </div>
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-1 pl-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.keys(data).map((key, index) => {
               if (key.startsWith("TT")) {
                 return (
@@ -83,7 +83,7 @@ const page = () => {
               Capteurs de pression
             </h1>
           </div>
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-1 pl-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.keys(data).map((key, index) => {
               if (key.startsWith("P")) {
                 return (
@@ -105,7 +105,7 @@ const page = () => {
           <div>
             <h1 className="text-3xl font-semibold px-2.5 py-2">Capteurs RS</h1>
           </div>
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-1 pl-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.keys(data).map((key, index) => {
               if (key.startsWith("RS")) {
                 return (
@@ -129,7 +129,7 @@ const page = () => {
               Capteurs d'oxygene
             </h1>
           </div>
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-1 pl-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.keys(data).map((key, index) => {
               if (key.startsWith("O")) {
                 return (
@@ -153,7 +153,7 @@ const page = () => {
               Capteurs de C
             </h1>
           </div>
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-1 pl-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.keys(data).map((key, index) => {
               if (key.startsWith("C")) {
                 return (

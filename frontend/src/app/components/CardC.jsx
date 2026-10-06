@@ -24,7 +24,7 @@ const Card = ({ title, value, descript }) => {
   ];
 
   return (
-    <div className="flex gap-6 p-4">
+    <div className="flex flex-col lg:flex-row gap-6 p-4">
       {/* Sensor Type Sidebar */}
       <div className="flex flex-col gap-2 min-w-[180px]">
         {sensorButtons.map((btn) => (
@@ -49,7 +49,7 @@ const Card = ({ title, value, descript }) => {
       </div>
 
       {/* Sensor Data Grid */}
-      <div className="flex-1 grid grid-cols-4 gap-4">
+      <div className="min-w-0 flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {data.map((item, index) =>
           Object.keys(item).map((key) => {
             if (key.startsWith(capteur)) {

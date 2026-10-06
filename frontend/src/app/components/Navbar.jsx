@@ -13,6 +13,9 @@ const Navbar = () => {
   const { logout } = useAuthContext();
   const router = useRouter();
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => setMenuOpen(false), [pathname]);
 
   const handleLogout = () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -23,24 +26,35 @@ const Navbar = () => {
   };
 
   const handleSectionClick = (section) => {
+    setMenuOpen(false);
     router.push(section);
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-white/20">
+    <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-white/20">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Left Logo */}
           <div className="flex items-center">
             <img
-              src="cnesten.png"
+              src="/cnesten.png"
               alt="CNESTEN Logo"
-              className="w-16 h-16 object-contain transition-transform hover:scale-105"
+              className="w-12 h-12 xl:w-16 xl:h-16 object-contain transition-transform hover:scale-105"
             />
           </div>
 
+          <button
+            type="button"
+            className="xl:hidden modern-btn modern-btn-secondary min-h-11"
+            aria-expanded={menuOpen}
+            aria-controls="main-navigation-items"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? "Close menu" : "Menu"}
+          </button>
+
           {/* Navigation Items */}
-          <div className="flex items-center gap-2">
+          <div id="main-navigation-items" className={`site-nav-items ${menuOpen ? "is-open" : ""}`}>
             <NavItem
               icon={<IoPieChartSharp size={18} />}
               text="Dashboard"
@@ -80,6 +94,7 @@ const Navbar = () => {
             <button
               className="flex items-center gap-2 px-3 py-2 ml-1 rounded-xl bg-purple-100 text-purple-600 hover:bg-purple-200 transition-all duration-300"
               onClick={() => router.push("/radiation")}
+              aria-label="Switch to Radiation Dashboard"
               title="Switch to Radiation Dashboard"
             >
               <span className="text-lg">☢️</span>
@@ -97,9 +112,9 @@ const Navbar = () => {
           </div>
 
           {/* Right Logo */}
-          <div className="flex items-center">
+          <div className="hidden xl:flex items-center shrink-0">
             <img
-              src="iresen1.png"
+              src="/iresen1.png"
               alt="IRESEN Logo"
               className="h-14 object-contain transition-transform hover:scale-105"
             />
@@ -120,6 +135,7 @@ const NavItem = ({ icon, text, isActive, onClick }) => (
         : "text-gray-600 hover:bg-gray-100/80 hover:text-gray-900"
       }
     `}
+    aria-current={isActive ? "page" : undefined}
     onClick={onClick}
   >
     <span className={`transition-transform duration-300 ${isActive ? "scale-110" : ""}`}>

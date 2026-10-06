@@ -93,10 +93,10 @@ export default function Singin() {
       <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMmM1NWUiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
 
       <div className="relative w-full max-w-5xl">
-        <div className="modern-card overflow-hidden flex flex-col md:flex-row">
+        <div className="modern-card overflow-hidden flex flex-col lg:flex-row">
 
           {/* Left Side - Login Form */}
-          <div className="w-full md:w-1/2 p-8 md:p-12">
+          <div className="w-full lg:w-1/2 p-5 sm:p-8 lg:p-12">
             {/* Header */}
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
@@ -164,7 +164,7 @@ export default function Singin() {
           </div>
 
           {/* Right Side - Dashboard Selection */}
-          <div className="w-full md:w-1/2 bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 p-8 md:p-12 flex flex-col items-center justify-center text-white relative overflow-hidden">
+          <div className="w-full lg:w-1/2 bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 p-5 sm:p-8 lg:p-12 flex flex-col items-center justify-center text-white relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIi8+PC9nPjwvZz48L3N2Zz4=')] opacity-50"></div>
 

@@ -117,8 +117,8 @@ const Archive = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           {/* Search Form */}
-          <div className="modern-card p-6">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="modern-card min-w-0 p-4 sm:p-6">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-400 to-purple-500 text-white">
                 <FaSearch size={20} />
               </div>
@@ -132,7 +132,7 @@ const Archive = () => {
                   <FaCalendarAlt className="text-gray-400" />
                   Date Range
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">From</label>
                     <input
@@ -216,7 +216,7 @@ const Archive = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <button
                   type="submit"
                   className="flex-1 modern-btn modern-btn-primary flex items-center justify-center gap-2"
@@ -237,8 +237,8 @@ const Archive = () => {
           </div>
 
           {/* Records Display */}
-          <div className="lg:col-span-2 modern-card p-6">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="lg:col-span-2 modern-card min-w-0 p-4 sm:p-6">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-400 to-green-500 text-white">
                 <MdOutlineSensors size={20} />
               </div>

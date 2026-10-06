@@ -14,7 +14,7 @@ const Table = ({ tableId, rows = 4, columns = 3, potConfigs = {}, onPotClick }) 
     });
 
     return (
-        <div className="bg-neutral-50 p-6 rounded-2xl border border-neutral-200 hover:border-violet-300 transition-colors duration-300">
+        <div className="min-w-0 overflow-x-auto bg-neutral-50 p-3 sm:p-6 rounded-2xl border border-neutral-200 hover:border-violet-300 transition-colors duration-300">
             <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
                 <h3 className="text-lg font-bold text-gray-700 flex items-center gap-2">
                     <span className="w-8 h-8 bg-violet-100 text-violet-700 rounded-lg flex items-center justify-center text-sm font-bold">
@@ -28,9 +28,10 @@ const Table = ({ tableId, rows = 4, columns = 3, potConfigs = {}, onPotClick }) 
             </div>
 
             <div
-                className="grid gap-3"
+                className="grid gap-2 sm:gap-3"
                 style={{
                     gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                    minWidth: `${columns * 48 + (columns - 1) * 8}px`,
                 }}
             >
                 {pots.map((pot) => (

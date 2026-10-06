@@ -52,8 +52,8 @@ const SerrePage = () => {
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 py-6">
-                <div className="modern-card p-6">
-                    <div className="flex items-center gap-3 mb-6">
+                <div className="modern-card min-w-0 p-4 sm:p-6">
+                    <div className="flex flex-wrap items-center gap-3 mb-6">
                         <div className="w-2 h-8 bg-gradient-to-b from-violet-400 to-violet-600 rounded-full"></div>
                         <h2 className="text-xl font-bold text-gray-800">Serre Layout</h2>
                         <div className="ml-auto">

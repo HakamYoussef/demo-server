@@ -23,12 +23,12 @@ const page = () => {
   ];
   return (
     <div className="">
-      <div className="flex">
+      <div className="min-h-screen pt-[90px]">
         <Navbar />
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0 w-full max-w-7xl mx-auto px-4">
           <Sections />
           <div className="mb-1">
-            <div className="flex gap-x">
+            <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-semibold px-2.5 py-2">
                 Données Actuelles
               </h1>

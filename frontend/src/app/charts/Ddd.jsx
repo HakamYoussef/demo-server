@@ -49,7 +49,7 @@ const Ddd = () => {
       title: "Value",
     },
     type: "scattergl",
-    width: 1200,
+    autosize: true,
     height: 500,
   };
 
@@ -57,7 +57,7 @@ const Ddd = () => {
     <div className="">
       <p>{plotImage}</p>
       <h1 className="text-3xl font-semibold px-2.5 pt-2">graphs</h1>
-      <Plot data={data} layout={layout} className="js-plotly-plot" />
+      <Plot data={data} layout={layout} useResizeHandler style={{ width: "100%", height: "500px" }} config={{ responsive: true }} />
     </div>
   );
 };

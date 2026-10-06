@@ -356,7 +356,8 @@ function RadiationDash() {
               <button
                 onClick={() => router.push("/air")}
                 className="flex items-center gap-2 px-3 py-2 rounded-xl bg-green-100 text-green-600 hover:bg-green-200 transition-all duration-300"
-                title="Switch to Agriculture Dashboard"
+                aria-label="Switch to Agriculture Dashboard"
+                title="Switch to Agriculture Dashboard"
               >
                 <span className="text-lg">🌿</span>
                 <span className="font-medium text-sm hidden lg:inline">Agriculture</span>
@@ -376,11 +377,11 @@ function RadiationDash() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-6" style={{ paddingTop: "100px" }}>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(300px,1fr)_minmax(0,3fr)] gap-6">
 
           {/* Control Panel */}
-          <div className="modern-card p-6">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="modern-card min-w-0 p-4 sm:p-6">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="p-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20">
                 <MdSensors size={22} />
               </div>
@@ -439,7 +440,7 @@ function RadiationDash() {
 
             {/* Indicators */}
             <div className="mt-6 pt-6 border-t border-gray-100">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex flex-wrap items-center gap-3 mb-6">
                 <div className="p-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20">
                   <FaChartLine size={20} />
                 </div>
@@ -523,10 +524,10 @@ function RadiationDash() {
           </div>
 
           {/* Charts Section */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="min-w-0 space-y-6">
             {/* Integral Mode Chart */}
-            <div className="modern-card p-6">
-              <div className="flex items-center gap-3 mb-4">
+            <div className="modern-card min-w-0 p-4 sm:p-6">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className="w-2 h-8 bg-gradient-to-b from-green-400 to-emerald-600 rounded-full"></div>
                 <h2 className="text-xl font-bold text-gray-800">Integral Mode</h2>
                 <div className="ml-auto flex items-center gap-2">
@@ -550,8 +551,8 @@ function RadiationDash() {
             </div>
 
             {/* Differential Mode Chart */}
-            <div className="modern-card p-6">
-              <div className="flex items-center gap-3 mb-4">
+            <div className="modern-card min-w-0 p-4 sm:p-6">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className="w-2 h-8 bg-gradient-to-b from-indigo-400 to-purple-600 rounded-full"></div>
                 <h2 className="text-xl font-bold text-gray-800">Differential Mode</h2>
               </div>
