@@ -6,10 +6,10 @@ import { MdOutlineSensors, MdWaves } from "react-icons/md";
 
 const Card = () => {
   const [data, setData] = useState({});
-  const [capteur, setCapteur] = useState("O");
+  const [capteur, setCapteur] = useState("O_eau");
 
   const sensorTypes = [
-    { key: "O", label: "Water Oxygen", icon: <FaWind size={16} />, color: "from-cyan-400 to-blue-500" },
+    { key: "O_eau", label: "Water Oxygen", icon: <FaWind size={16} />, color: "from-cyan-400 to-blue-500" },
     { key: "PH_eau", label: "Water pH", icon: <FaFlask size={16} />, color: "from-blue-400 to-indigo-600" },
     { key: "LEVEL_eau", label: "Tank Level", icon: <MdWaves size={16} />, color: "from-blue-500 to-cyan-600" },
   ];

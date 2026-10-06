@@ -12,7 +12,7 @@ const Card = () => {
     { key: "H_S", label: "Soil Humidity", icon: <FaTint size={16} />, color: "from-cyan-400 to-blue-500" },
     { key: "T_S", label: "Soil Temperature", icon: <FaThermometerHalf size={16} />, color: "from-orange-400 to-red-500" },
     { key: "C_S", label: "Soil Conductivity", icon: <MdOutlineSensors size={16} />, color: "from-amber-400 to-yellow-600" },
-    { key: "PH", label: "Soil pH", icon: <FaFlask size={16} />, color: "from-green-400 to-emerald-600" },
+    { key: "PH_S", label: "Soil pH", icon: <FaFlask size={16} />, color: "from-green-400 to-emerald-600" },
   ];
 
   useEffect(() => {

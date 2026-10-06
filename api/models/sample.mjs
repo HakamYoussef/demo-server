@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const readingSchema = new Schema({
+  deviceId: { type: String },
+  mqttMessageId: { type: String, unique: true, sparse: true },
     timestamp: { type: Date, required: true },
   C_S2: { type: Number },
   H_S6: { type: Number },
@@ -40,6 +42,7 @@ const readingSchema = new Schema({
   H_S8: { type: Number },
   T_A6: { type: Number },
   PH_eau: { type: Number },
+  O_eau: { type: Number },
   H_S9: { type: Number },
   T_S12: { type: Number },
   H_A5: { type: Number },
