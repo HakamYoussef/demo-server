@@ -14,6 +14,11 @@ import adminRouter from "./routes/admin.mjs";
 import radiationRouter from "./routes/radiation-routes.mjs";
 import arduinoRouter from "./routes/arduino-routes.mjs";
 
+import { readingModel } from "./models/sample.mjs";
+import { mqttSettings, startMqttSensors } from "./services/mqtt-sensors.mjs";
+
+// Validate broker configuration before starting services.
+const sensorMqttSettings = mqttSettings();
 const app = express();
 const PORT = process.env.PORT || 5002;
 
@@ -97,7 +102,10 @@ app.use((error, req, res, next) => {
 // Connect to MongoDB and start the server
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => {
+  .then(async () => {
+    await readingModel.init();
+    const mqttClient = startMqttSensors({ io, settings: sensorMqttSettings });
+    httpServer.on("close", () => mqttClient?.end());
     // 4. ÉCOUTER VIA HTTPSERVER ET NON APP
     httpServer.listen(PORT, () => {
       console.log(`Server is running in REAL-TIME mode on port ${PORT}`);

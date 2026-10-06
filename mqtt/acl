@@ -1,0 +1,7 @@
+user sensor-server
+topic read devices/+/telemetry
+topic write devices/+/ack
+
+user esp32-sim-01
+topic write devices/esp32-sim-01/telemetry
+topic read devices/esp32-sim-01/ack

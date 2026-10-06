@@ -1,2 +1,6 @@
 api/node_modules/
-frontend/node_modules/  
+frontend/node_modules/
+**/.venv/
+**/__pycache__/
+**/.env
+*.key
