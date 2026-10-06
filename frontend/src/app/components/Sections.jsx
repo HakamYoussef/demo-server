@@ -23,13 +23,13 @@ const Sections = () => {
   ];
 
   return (
-    <div className="flex justify-center py-4">
-      <div className="inline-flex items-center gap-2 p-1.5 rounded-2xl bg-white shadow-lg border border-gray-100">
+    <div className="flex justify-center px-3 py-4">
+      <div className="inline-flex items-center gap-1 sm:gap-2 p-1.5 rounded-2xl bg-white shadow-lg border border-gray-100">
         {sections.map((section) => (
           <button
             key={section.path}
             className={`
-              flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+              flex items-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl font-semibold text-sm
               transition-all duration-300 ease-out
               ${activeSection === section.path
                 ? `bg-gradient-to-r ${section.activeColor} text-white shadow-lg ${section.activeShadow} scale-105`

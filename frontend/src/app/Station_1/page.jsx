@@ -62,11 +62,11 @@ const page = () => {
     },
   ];
   return (
-    <div className="flex">
+    <div className="min-h-screen pt-[90px]">
       <Navbar />
-      <div>
-        <h1 className="text-5xl font-bold pl-7 pt-3">Conditions actuelles</h1>
-        <div className="flex gap-2 pl-5 py-2.5">
+      <div className="max-w-7xl mx-auto px-4">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold pt-3">Conditions actuelles</h1>
+        <div className="flex flex-wrap gap-4 py-2.5">
           <div className="">
             <FaTemperatureHigh size={40} className="pb-2" />
             <p className="text-xl">0.00</p>
@@ -110,7 +110,7 @@ const page = () => {
         </div>
         <div>
           <h1 className="text-3xl pt-2">Statistiques génerales :</h1>
-          <div className="grid grid-cols-[1fr_6fr]">
+          <div className="grid grid-cols-[minmax(120px,1fr)_6fr] overflow-x-auto">
             <div className="flex flex-col gap-0.5 pt-3.5 ">
               <h3>Ajourd'hui</h3>
               <h3>Hier</h3>

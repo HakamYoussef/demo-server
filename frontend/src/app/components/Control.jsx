@@ -38,7 +38,7 @@ export const Control = () => {
   }, [token]);
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-2 h-8 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
         <h1 className="text-2xl font-bold text-gray-800">Control Panel</h1>
@@ -47,7 +47,7 @@ export const Control = () => {
       {/* Control Buttons Section */}
       <div className="mb-8">
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Quick Controls</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
           <ControlButton field="Elv1" isOn={data["Elv1"] === 1} />
           <ControlButton field="Elv2" isOn={data["Elv2"] === 1} />
           <ControlButton field="Elv3" isOn={data["Elv3"] === 1} />
@@ -60,7 +60,7 @@ export const Control = () => {
       {/* Real-time Status Section */}
       <div>
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Device Status</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
           {Object.keys(data).length === 0 ? (
             <div className="col-span-full flex flex-col items-center justify-center py-12 text-gray-400">
               <MdOutlineSensors size={48} className="mb-3 opacity-50" />

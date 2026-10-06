@@ -108,7 +108,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="relative group min-w-[240px]">
+        <div className="relative group w-full md:w-60 min-w-0 shrink-0">
           <select
             className="w-full appearance-none bg-white border border-gray-200 text-gray-700 py-2.5 px-4 pr-10 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all cursor-pointer hover:border-green-300 shadow-sm"
             value={selectedSensor.id}

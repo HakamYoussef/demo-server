@@ -291,8 +291,8 @@ const Page = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* Temperature Threshold Card */}
-          <div className="modern-card p-6">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="modern-card min-w-0 p-4 sm:p-6">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="p-3 rounded-xl bg-gradient-to-r from-orange-400 to-red-500 text-white">
                 <FaThermometerHalf size={24} />
               </div>
@@ -327,8 +327,8 @@ const Page = () => {
           </div>
 
           {/* Create Account Card */}
-          <div className="modern-card p-6">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="modern-card min-w-0 p-4 sm:p-6">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="p-3 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 text-white">
                 <FaUserPlus size={24} />
               </div>
@@ -404,8 +404,8 @@ const Page = () => {
           </div>
 
           {/* Serre Configuration Card */}
-          <div className="modern-card p-6 lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="modern-card min-w-0 p-4 sm:p-6 lg:col-span-2">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="p-3 rounded-xl bg-gradient-to-r from-violet-400 to-indigo-500 text-white">
                 <PiPlantFill size={24} />
               </div>

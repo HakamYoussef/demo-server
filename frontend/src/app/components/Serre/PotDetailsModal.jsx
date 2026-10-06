@@ -43,6 +43,8 @@ const PotDetailsModal = ({ isOpen, onClose, potId, potConfigs = {} }) => {
         <Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
             <ModalOverlay backdropFilter="blur(5px)" bg="blackAlpha.300" />
             <ModalContent
+                mx={3}
+                maxW="min(28rem, calc(100vw - 1.5rem))"
                 bg="white"
                 color="gray.800"
                 borderRadius="2xl"
@@ -77,7 +79,7 @@ const PotDetailsModal = ({ isOpen, onClose, potId, potConfigs = {} }) => {
                         <Divider borderColor="gray.100" />
 
                         {/* Metrics Grid */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <MetricItem
                                 icon={<FaThermometerHalf />}
                                 label="Temperature"
