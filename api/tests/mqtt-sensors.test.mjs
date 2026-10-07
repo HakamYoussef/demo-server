@@ -93,3 +93,17 @@ test("public broker mode requires explicit opt-in and retains TLS verification",
   assert.equal(settings.options.rejectUnauthorized, true);
   assert.throws(() => mqttSettings({...env, MQTT_URL: "mqtt://broker.emqx.io:1883", MQTT_ALLOW_ANONYMOUS: "true"}), /mqtts/);
 });
+
+
+test("production public MQTT requires a second opt-in and still enforces TLS", () => {
+  const env = {NODE_ENV:"production", MQTT_URL:"mqtts://broker.example.com:8883", MQTT_ALLOW_ANONYMOUS:"true"};
+  assert.throws(() => mqttSettings(env), /disabled in production/);
+  assert.throws(() => mqttSettings({...env, MQTT_ALLOW_ANONYMOUS_IN_PRODUCTION:"false"}), /disabled in production/);
+  const optedIn = {...env, MQTT_ALLOW_ANONYMOUS_IN_PRODUCTION:"true"};
+  const settings = mqttSettings(optedIn);
+  assert.equal(settings.options.rejectUnauthorized, true);
+  assert.equal(settings.options.username, undefined);
+  assert.equal(settings.options.password, undefined);
+  assert.throws(() => mqttSettings({...optedIn, MQTT_URL:"mqtt://broker.example.com:1883"}), /mqtts/);
+  assert.throws(() => mqttSettings({...optedIn, MQTT_URL:"mqtts://user:password@broker.example.com:8883"}), /credentials/);
+});

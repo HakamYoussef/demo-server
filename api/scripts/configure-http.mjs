@@ -31,6 +31,15 @@ const legacy = dotenv.parse(await readOptional(legacyPath));
 const configuredKey = local.JWT_SECRET_KEY || process.env.JWT_SECRET_KEY || legacy.JWT_SECRET_KEY;
 const secret = configuredKey && Buffer.byteLength(configuredKey) >= 32 ? configuredKey : randomBytes(48).toString('hex');
 const settings = { NODE_ENV: 'production', ALLOW_INSECURE_HTTP: 'true', APP_ORIGINS: origin, JWT_SECRET_KEY: secret };
+if (args.includes('--allow-public-mqtt')) {
+  const broker = local.MQTT_URL || process.env.MQTT_URL || legacy.MQTT_URL;
+  let brokerUrl;
+  try { brokerUrl = new URL(broker); } catch { throw new Error('Restore MQTT_URL before enabling the public broker'); }
+  if (brokerUrl.protocol !== 'mqtts:' || brokerUrl.username || brokerUrl.password) throw new Error('Public MQTT must use mqtts:// with no credentials in the URL');
+  settings.MQTT_ALLOW_ANONYMOUS = 'true';
+  settings.MQTT_ALLOW_ANONYMOUS_IN_PRODUCTION = 'true';
+  console.warn('Public MQTT enabled explicitly: other broker clients may read or publish your device topics. TLS verification stays enabled.');
+}
 const lines = previous.split(/\r?\n/).filter(line => !Object.keys(settings).some(key => new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=`).test(line)));
 if (previous) {
   const backup = `${localPath}.backup-${Date.now()}`;

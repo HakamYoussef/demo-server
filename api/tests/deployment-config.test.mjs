@@ -37,7 +37,7 @@ test('setup preserves MongoDB, hides secrets, persists strong keys and replaces 
     await mkdir(join(directory,'scripts')); await mkdir(join(directory,'bin'));
     await symlink(fileURLToPath(new URL('../node_modules',import.meta.url)),join(directory,'node_modules'));
     await writeFile(join(directory,'scripts/configure-http.mjs'),await readFile(new URL('../scripts/configure-http.mjs',import.meta.url)));
-    const legacy = 'MONGODB_URI=mongodb://localhost/fixture\nJWT_SECRET_KEY=old-short-fixture\n';
+    const legacy = 'MONGODB_URI=mongodb://localhost/fixture\nJWT_SECRET_KEY=old-short-fixture\nMQTT_URL=mqtts://broker.example.com:8883\n';
     await writeFile(join(directory,'.env'),legacy);
     const capture = join(directory,'pm2-capture.json');
     await writeFile(join(directory,'bin/pm2'),`#!${process.execPath}\nrequire('fs').writeFileSync(process.env.CAPTURE_PATH,JSON.stringify({args:process.argv.slice(2),key:process.env.JWT_SECRET_KEY,origin:process.env.APP_ORIGINS,mongo:process.env.MONGODB_URI}));\n`,{mode:0o700});
@@ -54,5 +54,11 @@ test('setup preserves MongoDB, hides secrets, persists strong keys and replaces 
     assert.equal(spawnSync(process.execPath,[...command,'--pm2-id=2'],{env,encoding:'utf8'}).status,0);
     assert.deepEqual(JSON.parse(await readFile(capture,'utf8')).args,['restart','2','--update-env']);
     assert.notEqual(spawnSync(process.execPath,[...command,'--pm2-id=not-an-id'],{env,encoding:'utf8'}).status,0);
+    assert.equal(spawnSync(process.execPath,[...command,'--pm2-id=2','--allow-public-mqtt'],{env,encoding:'utf8'}).status,0);
+    const publicConfig=dotenv.parse(await readFile(join(directory,'.env.local'),'utf8'));
+    assert.equal(publicConfig.MQTT_ALLOW_ANONYMOUS,'true');
+    assert.equal(publicConfig.MQTT_ALLOW_ANONYMOUS_IN_PRODUCTION,'true');
+    assert.equal(publicConfig.JWT_SECRET_KEY,local.JWT_SECRET_KEY);
+    assert.equal(await readFile(join(directory,'.env'),'utf8'),legacy);
   } finally { await rm(directory,{recursive:true,force:true}); }
 });
