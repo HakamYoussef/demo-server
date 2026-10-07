@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import protectedRoute from "../components/protectedRoute";
 import { Control } from "../components/Control";
-import Navbar from "../components/Navbar";
 import { FaLock, FaExclamationTriangle } from "react-icons/fa";
 import { MdOutlineSensors } from "react-icons/md";
 
@@ -105,8 +104,7 @@ const ControlPage = () => {
 
   // Control panel
   return (
-    <div className="min-h-screen" style={{ paddingTop: "90px" }}>
-      <Navbar />
+    <div>
 
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-8 px-6">
