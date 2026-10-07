@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { getSoilReadings } from "../../lib/soil-readings.mjs";
 import {
     Modal,
     ModalOverlay,
@@ -23,22 +24,16 @@ import {
     FaLeaf
 } from "react-icons/fa";
 
-const PotDetailsModal = ({ isOpen, onClose, potId, potKey, potConfigs = {} }) => {
-    // Get configured pot data or use mock data
+const PotDetailsModal = ({ isOpen, onClose, potId, potKey, potConfigs = {}, sensorData = {}, sensorConnected = false }) => {
     const configuredPot = potConfigs[potKey] || {};
     const soilSensor = configuredPot.soilSensor;
 
-    const getMockData = (id) => ({
-        id: configuredPot.id || id,
-        type: configuredPot.type || (id?.split('-')[1] % 2 === 0 ? "Tomato (Solanum lycopersicum)" : "Lettuce (Lactuca sativa)"),
-        temp: (22 + Math.random() * 5).toFixed(1),
-        humidity: (60 + Math.random() * 15).toFixed(1),
-        ph: (6.0 + Math.random() * 1.5).toFixed(1),
-        conductivity: (1.2 + Math.random() * 0.8).toFixed(2),
-        health: "Good",
-    });
-
-    const data = getMockData(potId);
+    const data = {
+        id: configuredPot.id || potId,
+        type: configuredPot.type || "Not configured",
+        ...getSoilReadings(sensorData, soilSensor),
+    };
+    const format = (value, unit = "") => value === null ? "Unavailable" : `${value}${unit}`;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
@@ -59,7 +54,9 @@ const PotDetailsModal = ({ isOpen, onClose, potId, potKey, potConfigs = {} }) =>
                             <Text fontSize="xl" fontWeight="bold">Pot Details</Text>
                             <Text fontSize="sm" color="gray.500">ID: {data.id}</Text>
                         </VStack>
-                        <Badge colorScheme="purple" px={2} borderRadius="full">Healthy</Badge>
+                        <Badge colorScheme={sensorConnected ? "green" : "gray"} px={2} borderRadius="full">
+                            {sensorConnected ? "Connected" : "Disconnected"}
+                        </Badge>
                     </HStack>
                 </ModalHeader>
                 <ModalCloseButton mt={2} />
@@ -95,25 +92,25 @@ const PotDetailsModal = ({ isOpen, onClose, potId, potKey, potConfigs = {} }) =>
                             <MetricItem
                                 icon={<FaThermometerHalf />}
                                 label="Temperature"
-                                value={`${data.temp} °C`}
+                                value={format(data.temp, " °C")}
                                 color="orange.500"
                             />
                             <MetricItem
                                 icon={<FaTint />}
                                 label="Humidity"
-                                value={`${data.humidity} %`}
+                                value={format(data.humidity, " %")}
                                 color="blue.500"
                             />
                             <MetricItem
                                 icon={<FaFlask />}
                                 label="PH Level"
-                                value={data.ph}
+                                value={format(data.ph)}
                                 color="purple.500"
                             />
                             <MetricItem
                                 icon={<FaBolt />}
                                 label="Conductivity"
-                                value={`${data.conductivity} mS/cm`}
+                                value={format(data.conductivity, " mS/cm")}
                                 color="yellow.600"
                             />
                         </div>
