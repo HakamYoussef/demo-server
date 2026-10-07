@@ -1,5 +1,6 @@
 "use client";
 import { io } from "socket.io-client";
+import SensorSelector from "../components/SensorSelector";
 import React, { useState, useEffect } from "react";
 import { FaThermometerHalf, FaTint, FaFlask, FaLeaf } from "react-icons/fa";
 import { MdOutlineSensors } from "react-icons/md";
@@ -9,10 +10,10 @@ const Card = () => {
   const [capteur, setCapteur] = useState("H_S");
 
   const sensorTypes = [
-    { key: "H_S", label: "Soil Humidity", icon: <FaTint size={16} />, color: "from-cyan-400 to-blue-500" },
-    { key: "T_S", label: "Soil Temperature", icon: <FaThermometerHalf size={16} />, color: "from-orange-400 to-red-500" },
-    { key: "C_S", label: "Soil Conductivity", icon: <MdOutlineSensors size={16} />, color: "from-amber-400 to-yellow-600" },
-    { key: "PH_S", label: "Soil pH", icon: <FaFlask size={16} />, color: "from-green-400 to-emerald-600" },
+    { key: "H_S", label: "Soil Humidity", shortLabel: "Humidity", icon: <FaTint size={16} />, color: "from-cyan-400 to-blue-500" },
+    { key: "T_S", label: "Soil Temperature", shortLabel: "Temp.", icon: <FaThermometerHalf size={16} />, color: "from-orange-400 to-red-500" },
+    { key: "C_S", label: "Soil Conductivity", shortLabel: "Conduct.", icon: <MdOutlineSensors size={16} />, color: "from-amber-400 to-yellow-600" },
+    { key: "PH_S", label: "Soil pH", shortLabel: "pH", icon: <FaFlask size={16} />, color: "from-green-400 to-emerald-600" },
   ];
 
   useEffect(() => {
@@ -35,29 +36,9 @@ const Card = () => {
   const getCurrentSensorType = () => sensorTypes.find(s => s.key === capteur);
 
   return (
-    <div className="p-4">
+    <div className="px-0 py-2 sm:p-4">
       {/* Sensor Type Selector */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {sensorTypes.map((sensor) => (
-          <button
-            key={sensor.key}
-            className={`
-              flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm
-              transition-all duration-300 ease-out
-              ${capteur === sensor.key
-                ? `bg-gradient-to-r ${sensor.color} text-white shadow-lg scale-105`
-                : "bg-white text-gray-600 border border-gray-200 hover:border-amber-300 hover:text-amber-600"
-              }
-            `}
-            onClick={() => setCapteur(sensor.key)}
-          >
-            <span className={`transition-transform duration-300 ${capteur === sensor.key ? "scale-110" : ""}`}>
-              {sensor.icon}
-            </span>
-            <span>{sensor.label}</span>
-          </button>
-        ))}
-      </div>
+      <SensorSelector sensors={sensorTypes} value={capteur} onChange={setCapteur} />
 
       {/* Sensor Data Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
