@@ -1,5 +1,5 @@
 "use client";
-import { apiFetch as fetch } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
 import React from "react";
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";

@@ -1,5 +1,5 @@
 'use client'
-import { apiFetch as fetch } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
 import { useAuthContext } from "../context/authContext";
 import { useRouter } from "next/navigation";
 import { useToast, Spinner } from "@chakra-ui/react";

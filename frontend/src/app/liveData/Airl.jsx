@@ -1,6 +1,6 @@
 "use client";
-import { apiFetch as fetch } from "../lib/api";
-import { createSocket as io } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
+import { createSocket as io } from "../lib/api.mjs";
 import SensorSelector from "../components/SensorSelector";
 import React from "react";
 import { useState, useEffect, useRef } from "react";

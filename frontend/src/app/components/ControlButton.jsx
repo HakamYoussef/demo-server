@@ -1,4 +1,4 @@
-import { apiFetch as fetch } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../context/authContext";
 import { useToast } from "@chakra-ui/react";

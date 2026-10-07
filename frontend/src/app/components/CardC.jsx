@@ -1,5 +1,5 @@
 "use client";
-import { apiFetch as fetch } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
 import React from "react";
 import { FaThermometerHalf, FaTint } from "react-icons/fa";
 import { MdOutlineSensors } from "react-icons/md";

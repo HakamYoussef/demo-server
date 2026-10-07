@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useToast } from "@chakra-ui/react";
-import { apiFetch } from "../lib/api";
+import { apiFetch } from "../lib/api.mjs";
 const AuthContext = createContext();
 export const useAuthContext = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {

@@ -1,9 +1,9 @@
 "use client";
-import { apiFetch as fetch } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
 
 
 
-import { createSocket as io } from "../lib/api";
+import { createSocket as io } from "../lib/api.mjs";
 import { Button, Input, Select, useToast } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
