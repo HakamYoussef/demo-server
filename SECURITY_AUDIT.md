@@ -6,7 +6,7 @@ Date : 7 octobre 2026. Projet examiné : `/workspace/demo-server`.
 
 Les constats ci-dessous décrivent le code avant correction. Les changements du 7 octobre 2026 ajoutent les contrôles d'accès HTTP/Socket.IO, les clés de dispositifs, des sessions HttpOnly de 15 minutes avec révocation, la validation des entrées, les limites de débit, la pagination et les en-têtes. Le frontend utilise la même origine et ne conserve plus de jeton dans localStorage. Les dépendances vulnérables ont été mises à jour ; les audits npm des deux projets ne signalent plus de vulnérabilité connue. La compilation de production du frontend réussit.
 
-La configuration TLS, le proxy, le provisionnement des clés et les ACL du broker restent à appliquer en déploiement. Consulter [SECURITY_DEPLOYMENT.md](SECURITY_DEPLOYMENT.md) pour les changements de comportement et les limites de vérification. Aucun déploiement n'a été effectué.
+La configuration TLS, le proxy, le provisionnement des clés et les ACL du broker restent à appliquer en déploiement. Un mode HTTP explicite est disponible pour les sites existants ; il ne corrige pas le risque d’interception des identifiants et sessions sur le réseau. Consulter [SECURITY_DEPLOYMENT.md](SECURITY_DEPLOYMENT.md) pour les changements de comportement et les limites de vérification. Aucun déploiement n'a été effectué.
 
 ## Périmètre et méthode
 

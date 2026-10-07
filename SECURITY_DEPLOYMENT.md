@@ -2,6 +2,20 @@
 
 Les corrections sont dans le code local. Aucun déploiement, changement de secret ni modification de la base de production n'a été effectué.
 
+## Mise en service d'un site HTTP existant
+
+Le mode de compatibilité HTTP est explicite ; le comportement par défaut en production reste HTTPS. Ce mode conserve les contrôles de session, les rôles, la validation, les limites de débit et la protection d'origine, mais n'apporte aucun chiffrement de transport. Un attaquant sur le réseau peut intercepter les mots de passe et sessions.
+
+Après récupération des changements, dans `api`, lancer `npm run setup:http -- --restart`. La commande demande l'adresse HTTP complète réellement utilisée dans le navigateur, avec son port éventuel (exemple `http://IP:3000`). Elle valide l'origine et écrit une configuration dans `.env.local`, fichier ignoré par Git et protégé par des permissions 600. Elle ne modifie pas `.env` ni l'URI MongoDB existante. Une clé JWT aléatoire est créée uniquement si la clé configurée est absente ou trop courte ; une clé forte existante est conservée. Aucun secret n'est affiché.
+
+La commande définit `NODE_ENV=production`, `ALLOW_INSECURE_HTTP=true`, `APP_ORIGINS` et la clé JWT, puis redémarre le processus PM2 nommé `api` avec l'environnement mis à jour. Cette mise à jour évite qu'une ancienne clé courte conservée par PM2 ne prenne le dessus sur le fichier. Si le processus backend porte un autre nom, adapter le script ou provisionner les variables avec votre procédure habituelle. Les autres réglages présents dans `.env.local` sont préservés et une sauvegarde privée est créée avant modification.
+
+Pour le frontend, exécuter `npm run build`, puis redémarrer son propre processus PM2 (identifier son nom avec `pm2 list`). Un serveur Next encore démarré sur un ancien build peut demander des chunks supprimés par la compilation, provoquant du CSS manquant ou une erreur de chargement. Actualiser le navigateur après le redémarrage.
+
+L'API reste sur `127.0.0.1:5002`. Le frontend utilise des requêtes de même origine via les réécritures Next ou le proxy ; ne pas ouvrir une connexion directe du navigateur au port API. Les cookies restent HttpOnly et SameSite=Strict ; l'attribut Secure et HSTS sont désactivés uniquement quand ce mode HTTP est explicitement activé.
+
+Pour passer ensuite à HTTPS, changer l'origine configurée et désactiver `ALLOW_INSECURE_HTTP` dans le fichier et l'environnement PM2, puis redémarrer le backend. Les ACL MQTT et clés de dispositifs restent nécessaires ; le mode MQTT anonyme demeure interdit en production.
+
 ## Configuration nécessaire
 
 Utiliser Node.js 20.9 ou plus récent. Installer chaque projet avec `npm ci`, exécuter `npm test` dans chaque projet, puis `npm run build` dans frontend. L'API se lance avec `npm start` dans api ; elle écoute par défaut uniquement sur 127.0.0.1:5002.
@@ -20,7 +34,7 @@ Dans le service frontend : `API_UPSTREAM=http://127.0.0.1:5002` si Next et l'API
 
 ## HTTPS et proxy
 
-Configurer un domaine, un certificat TLS valide, la redirection HTTP vers HTTPS et HSTS au proxy frontal. Transmettre `Host`, `Origin`, `X-Forwarded-Proto` et les cookies. Écraser les en-têtes forwarded fournis par le client ; transmettre correctement les upgrades WebSocket. Ne pas exposer le port API directement à Internet. L'API refuse HTTP en mode production ; un proxy interne est autorisé uniquement avec la confiance explicite ci-dessus.
+Configurer un domaine, un certificat TLS valide, la redirection HTTP vers HTTPS et HSTS au proxy frontal. Transmettre `Host`, `Origin`, `X-Forwarded-Proto` et les cookies. Écraser les en-têtes forwarded fournis par le client ; transmettre correctement les upgrades WebSocket. Ne pas exposer le port API directement à Internet. Par défaut, l'API refuse HTTP en mode production ; un proxy interne HTTPS est autorisé avec la confiance explicite ci-dessus. Le mode HTTP existant exige l'opt-in documenté plus haut.
 
 Exemple de routage Nginx à intégrer au serveur TLS existant :
 
@@ -49,7 +63,7 @@ location / {
 
 ## Changements de comportement à prévoir
 
-- Les utilisateurs doivent se reconnecter : les anciens JWT ne sont plus acceptés. La session est un cookie HttpOnly, Secure en production et SameSite=Strict ; elle expire après 15 minutes. Aucun renouvellement automatique n'est ajouté.
+- Les utilisateurs doivent se reconnecter : les anciens JWT ne sont plus acceptés. La session est un cookie HttpOnly, Secure en production HTTPS et SameSite=Strict ; elle expire après 15 minutes. Aucun renouvellement automatique n'est ajouté.
 - La déconnexion révoque toutes les sessions du compte et coupe ses connexions Socket.IO. Les anciennes copies de tokens dans localStorage sont supprimées à l'ouverture de l'application et à la déconnexion.
 - La création de comptes exige désormais un administrateur. Préserver un compte existant dont `isAdmin` vaut true. Si aucun n'existe, utiliser la procédure interne de provisionnement dans MongoDB ; il n'y a pas de route publique de création du premier administrateur.
 - `POST /api/admin/threshold` est réservé aux administrateurs. Le seuil doit être un nombre entre -50 et 100 °C ; valider ces bornes avec les besoins du site avant déploiement.

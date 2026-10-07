@@ -1,3 +1,4 @@
+import { allowsHttp, validateDeployment } from "./lib/deployment-config.mjs";
 import { allowedOrigins, authenticateSocket } from "./middlewares/authorization.mjs";
 import { rateLimit, securityHeaders } from "./middlewares/security.mjs";
 import "./config.mjs";
@@ -18,8 +19,8 @@ import arduinoRouter from "./routes/arduino-routes.mjs";
 import { requireMongoUri } from "./config.mjs";
 import { startOptionalMqttSensors } from "./services/mqtt-sensors.mjs";
 
-if (!process.env.JWT_SECRET_KEY || Buffer.byteLength(process.env.JWT_SECRET_KEY) < 32) throw new Error("JWT_SECRET_KEY must contain at least 32 bytes");
-if (process.env.NODE_ENV === "production" && (!process.env.APP_ORIGINS || allowedOrigins().some(origin => !origin.startsWith("https://")))) throw new Error("Set APP_ORIGINS to explicit HTTPS origins");
+validateDeployment();
+if (allowsHttp()) console.warn("HTTP compatibility enabled: passwords and sessions are not encrypted in transit");
 const mongoUri = requireMongoUri();
 const app = express();
 app.disable("x-powered-by");
@@ -39,7 +40,7 @@ const io = new Server(httpServer, {
   allowRequest: (req, callback) => callback(null,
     (io.engine.clientsCount < 1000) &&
     (!req.headers.origin || allowedOrigins().includes(req.headers.origin)) &&
-    (process.env.NODE_ENV !== "production" || req.socket.encrypted === true ||
+    (process.env.NODE_ENV !== "production" || allowsHttp() || req.socket.encrypted === true ||
       (process.env.TRUST_PROXY_HOPS && req.headers["x-forwarded-proto"] === "https"))),
   cors: {
     origin: allowedOrigins(),

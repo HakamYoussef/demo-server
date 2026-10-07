@@ -1,3 +1,4 @@
+import { allowsHttp } from "../lib/deployment-config.mjs";
 import { allowedOrigins } from "./authorization.mjs";
 export function rateLimit({ limit = 300, windowMs = 60000, maxKeys = 10000 } = {}) {
   const buckets = new Map();
@@ -17,7 +18,7 @@ export function rateLimit({ limit = 300, windowMs = 60000, maxKeys = 10000 } = {
 }
 export function securityHeaders(req, res, next) {
   res.set({ "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer", "Cache-Control": "no-store" });
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && !allowsHttp()) {
     res.set("Strict-Transport-Security", "max-age=31536000");
     if (!req.secure) return res.status(426).json({ message: "HTTPS required" });
   }

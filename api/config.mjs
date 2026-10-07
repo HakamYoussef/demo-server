@@ -3,6 +3,9 @@ import { fileURLToPath } from "node:url";
 
 // PM2 may start Node from a different working directory.
 export const apiEnvPath = fileURLToPath(new URL("./.env", import.meta.url));
+// Keep generated server configuration in an ignored file, outside tracked source.
+export const apiLocalEnvPath = fileURLToPath(new URL("./.env.local", import.meta.url));
+dotenv.config({ path: apiLocalEnvPath });
 dotenv.config({ path: apiEnvPath });
 
 export function requireMongoUri(env = process.env) {
