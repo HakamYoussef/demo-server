@@ -23,9 +23,10 @@ import {
     FaLeaf
 } from "react-icons/fa";
 
-const PotDetailsModal = ({ isOpen, onClose, potId, potConfigs = {} }) => {
+const PotDetailsModal = ({ isOpen, onClose, potId, potKey, potConfigs = {} }) => {
     // Get configured pot data or use mock data
-    const configuredPot = potConfigs[potId] || {};
+    const configuredPot = potConfigs[potKey] || {};
+    const soilSensor = configuredPot.soilSensor;
 
     const getMockData = (id) => ({
         id: configuredPot.id || id,
@@ -75,6 +76,17 @@ const PotDetailsModal = ({ isOpen, onClose, potId, potConfigs = {} }) => {
                                 <Text fontSize="md" fontWeight="semibold" color="gray.800">{data.type}</Text>
                             </VStack>
                         </HStack>
+
+                        <VStack align="start" spacing={1}>
+                            <Text fontSize="sm" fontWeight="semibold">
+                                Soil Sensor: {soilSensor ? soilSensor : "Not assigned"}
+                            </Text>
+                            {soilSensor && (
+                                <Text fontSize="xs" color="gray.500">
+                                    H_S{soilSensor} · T_S{soilSensor} · C_S{soilSensor} · PH_S{soilSensor}
+                                </Text>
+                            )}
+                        </VStack>
 
                         <Divider borderColor="gray.100" />
 

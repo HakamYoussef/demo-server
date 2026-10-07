@@ -7,6 +7,7 @@ import { useDisclosure } from "@chakra-ui/react";
 
 const SerrePage = () => {
     const [selectedPotId, setSelectedPotId] = useState(null);
+    const [selectedPotKey, setSelectedPotKey] = useState(null);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     // Configuration state
@@ -30,8 +31,9 @@ const SerrePage = () => {
         }
     }, []);
 
-    const handlePotClick = (potId) => {
+    const handlePotClick = (potId, potKey) => {
         setSelectedPotId(potId);
+        setSelectedPotKey(potKey);
         onOpen();
     };
 
@@ -83,6 +85,7 @@ const SerrePage = () => {
                 isOpen={isOpen}
                 onClose={onClose}
                 potId={selectedPotId}
+                potKey={selectedPotKey}
                 potConfigs={config.potConfigs}
             />
         </div>
