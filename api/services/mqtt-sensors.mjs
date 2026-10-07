@@ -18,7 +18,9 @@ export function mqttSettings(env = process.env) {
     throw new Error("MQTT_URL must use mqtts://; put credentials in MQTT_USERNAME and MQTT_PASSWORD");
   }
   const anonymous = env.MQTT_ALLOW_ANONYMOUS === "true";
-  if (anonymous && env.NODE_ENV === "production") throw new Error("Anonymous MQTT is disabled in production");
+  if (anonymous && env.NODE_ENV === "production" && env.MQTT_ALLOW_ANONYMOUS_IN_PRODUCTION !== "true") {
+    throw new Error("Anonymous MQTT is disabled in production unless MQTT_ALLOW_ANONYMOUS_IN_PRODUCTION=true is explicitly set");
+  }
   if (!anonymous && (!env.MQTT_USERNAME || !env.MQTT_PASSWORD)) {
     throw new Error("MQTT_USERNAME and MQTT_PASSWORD are required");
   }

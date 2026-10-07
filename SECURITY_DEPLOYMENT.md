@@ -16,7 +16,13 @@ Pour le frontend, exécuter `npm run build`, puis redémarrer son propre process
 
 L'API reste sur `127.0.0.1:5002`. Le frontend utilise des requêtes de même origine via les réécritures Next ou le proxy ; ne pas ouvrir une connexion directe du navigateur au port API. Les cookies restent HttpOnly et SameSite=Strict ; l'attribut Secure et HSTS sont désactivés uniquement quand ce mode HTTP est explicitement activé.
 
-Pour passer ensuite à HTTPS, changer l'origine configurée et désactiver `ALLOW_INSECURE_HTTP` dans le fichier et l'environnement PM2, puis redémarrer le backend. Les ACL MQTT et clés de dispositifs restent nécessaires ; le mode MQTT anonyme demeure interdit en production.
+Pour passer ensuite à HTTPS, changer l'origine configurée et désactiver `ALLOW_INSECURE_HTTP` dans le fichier et l'environnement PM2, puis redémarrer le backend. Les ACL MQTT et clés de dispositifs restent nécessaires ; le mode MQTT anonyme reste interdit par défaut en production.
+
+## Broker MQTT public existant
+
+Si l'installation utilisait déjà un broker public anonyme en `mqtts://`, il est possible de rétablir cette compatibilité avec `npm run setup:http -- --restart --pm2-id=2 --origin=http://votre-domaine --allow-public-mqtt`. La commande exige une adresse MQTT TLS déjà configurée et définit explicitement `MQTT_ALLOW_ANONYMOUS=true` et `MQTT_ALLOW_ANONYMOUS_IN_PRODUCTION=true`. Elle conserve l'adresse du broker et les autres réglages ; seuls les flags de ce mode changent. MQTT sans TLS et la désactivation de vérification du certificat restent interdits.
+
+Un broker public ne garantit ni la confidentialité des topics ni l'identité du dispositif qui publie les mesures : les autres clients peuvent lire les données ou injecter des mesures. Ce mode rétablit le fonctionnement existant sans corriger ce risque. Pour un service privé, désactiver les deux flags, utiliser un broker authentifié et appliquer des ACL par dispositif.
 
 ## Configuration nécessaire
 
@@ -30,7 +36,7 @@ Dans api/.env ou les variables du service, définir :
 - `APP_ORIGINS=https://votre-domaine.example` : origine exacte du frontend, sans barre finale. Plusieurs origines peuvent être séparées par des virgules.
 - `TRUST_PROXY_HOPS=1` uniquement si un proxy de confiance se trouve devant l'API et si le port 5002 est inaccessible directement. Ajuster au nombre réel de proxies ; ne pas activer une confiance universelle.
 - `DEVICE_API_KEYS` : objet JSON `{ "esp32-01": "cle-aleatoire-de-32-caracteres-ou-plus" }`. Une clé aléatoire distincte par appareil. Cet exemple n'est pas une clé à utiliser.
-- MQTT : `MQTT_URL=mqtts://...`, `MQTT_USERNAME`, `MQTT_PASSWORD` et, si nécessaire, `MQTT_CA_FILE`. Le mode anonyme est refusé en production.
+- MQTT : `MQTT_URL=mqtts://...`, `MQTT_USERNAME`, `MQTT_PASSWORD` et, si nécessaire, `MQTT_CA_FILE`. Le mode anonyme est refusé par défaut en production.
 
 Dans le service frontend : `API_UPSTREAM=http://127.0.0.1:5002` si Next et l'API partagent le serveur. Cette URL est interne ; le navigateur utilise exclusivement la même origine que le site. En production, le proxy frontal doit diriger directement `/api/` et `/socket.io/` vers l'API, et le reste vers Next.
 
