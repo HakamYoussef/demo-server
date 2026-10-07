@@ -13,14 +13,15 @@ export function mqttSettings(env = process.env) {
   if (url.protocol !== "mqtts:" || url.username || url.password) {
     throw new Error("MQTT_URL must use mqtts://; put credentials in MQTT_USERNAME and MQTT_PASSWORD");
   }
-  if (!env.MQTT_USERNAME || !env.MQTT_PASSWORD) {
+  const anonymous = env.MQTT_ALLOW_ANONYMOUS === "true";
+  if (!anonymous && (!env.MQTT_USERNAME || !env.MQTT_PASSWORD)) {
     throw new Error("MQTT_USERNAME and MQTT_PASSWORD are required");
   }
   return {
     url: url.href,
     options: {
-      username: env.MQTT_USERNAME,
-      password: env.MQTT_PASSWORD,
+      username: anonymous ? undefined : env.MQTT_USERNAME,
+      password: anonymous ? undefined : env.MQTT_PASSWORD,
       clientId: env.MQTT_CLIENT_ID || `sensor-server-${randomUUID()}`,
       ca: env.MQTT_CA_FILE ? readFileSync(env.MQTT_CA_FILE) : undefined,
       rejectUnauthorized: true,

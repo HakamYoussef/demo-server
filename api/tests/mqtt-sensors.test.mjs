@@ -64,3 +64,14 @@ test("subscribes again after connection and keeps malformed messages isolated", 
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(rejected,true);
 });
+
+test("public broker mode requires explicit opt-in and retains TLS verification", () => {
+  const env = {MQTT_URL: "mqtts://broker.emqx.io:8883"};
+  assert.throws(() => mqttSettings(env), /required/);
+  assert.throws(() => mqttSettings({...env, MQTT_ALLOW_ANONYMOUS: "false"}), /required/);
+  const settings = mqttSettings({...env, MQTT_ALLOW_ANONYMOUS: "true", MQTT_USERNAME: "old-user", MQTT_PASSWORD: "old-password"});
+  assert.equal(settings.options.username, undefined);
+  assert.equal(settings.options.password, undefined);
+  assert.equal(settings.options.rejectUnauthorized, true);
+  assert.throws(() => mqttSettings({...env, MQTT_URL: "mqtt://broker.emqx.io:1883", MQTT_ALLOW_ANONYMOUS: "true"}), /mqtts/);
+});
