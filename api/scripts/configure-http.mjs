@@ -12,6 +12,9 @@ async function readOptional(path) {
   try { return await readFile(path, 'utf8'); } catch (error) { if (error.code === 'ENOENT') return ''; throw error; }
 }
 const args = process.argv.slice(2);
+const pm2Id = args.find(arg => arg.startsWith('--pm2-id='))?.slice('--pm2-id='.length);
+if (pm2Id !== undefined && !/^\d+$/.test(pm2Id)) throw new Error('--pm2-id must be a numeric PM2 process ID');
+const pm2Target = pm2Id ?? 'api';
 let origin = args.find(arg => arg.startsWith('--origin='))?.slice('--origin='.length);
 if (!origin) {
   const input = createInterface({ input: process.stdin, output: process.stdout });
@@ -40,9 +43,9 @@ console.warn('HTTP does not encrypt passwords or cookies. Use HTTPS when availab
 if (args.includes('--restart')) {
   // Updating PM2's environment avoids an old, short JWT key overriding the new file.
   const environment = { ...legacy, ...process.env, ...local, ...settings };
-  const result = spawnSync('pm2', ['restart', 'api', '--update-env'], { cwd: apiDirectory, env: environment, stdio: 'inherit' });
+  const result = spawnSync('pm2', ['restart', pm2Target, '--update-env'], { cwd: apiDirectory, env: environment, stdio: 'inherit' });
   if (result.error) throw result.error;
   if (result.status !== 0) process.exit(result.status || 1);
 } else {
-  console.log('Run again with --restart to apply configuration to the PM2 process named api.');
+  console.log(`Run again with --restart to apply configuration to PM2 target ${pm2Target}. Use --pm2-id=ID when names are duplicated.`);
 }

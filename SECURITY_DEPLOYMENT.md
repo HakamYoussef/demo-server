@@ -8,6 +8,8 @@ Le mode de compatibilité HTTP est explicite ; le comportement par défaut en pr
 
 Après récupération des changements, dans `api`, lancer `npm run setup:http -- --restart`. La commande demande l'adresse HTTP complète réellement utilisée dans le navigateur, avec son port éventuel (exemple `http://IP:3000`). Elle valide l'origine et écrit une configuration dans `.env.local`, fichier ignoré par Git et protégé par des permissions 600. Elle ne modifie pas `.env` ni l'URI MongoDB existante. Une clé JWT aléatoire est créée uniquement si la clé configurée est absente ou trop courte ; une clé forte existante est conservée. Aucun secret n'est affiché.
 
+En présence de plusieurs processus PM2 nommés `api`, utiliser leur ID : `npm run setup:http -- --restart --pm2-id=2` cible uniquement le processus 2.
+
 La commande définit `NODE_ENV=production`, `ALLOW_INSECURE_HTTP=true`, `APP_ORIGINS` et la clé JWT, puis redémarre le processus PM2 nommé `api` avec l'environnement mis à jour. Cette mise à jour évite qu'une ancienne clé courte conservée par PM2 ne prenne le dessus sur le fichier. Si le processus backend porte un autre nom, adapter le script ou provisionner les variables avec votre procédure habituelle. Les autres réglages présents dans `.env.local` sont préservés et une sauvegarde privée est créée avant modification.
 
 Pour le frontend, exécuter `npm run build`, puis redémarrer son propre processus PM2 (identifier son nom avec `pm2 list`). Un serveur Next encore démarré sur un ancien build peut demander des chunks supprimés par la compilation, provoquant du CSS manquant ou une erreur de chargement. Actualiser le navigateur après le redémarrage.

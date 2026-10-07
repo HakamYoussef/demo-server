@@ -51,5 +51,8 @@ test('setup preserves MongoDB, hides secrets, persists strong keys and replaces 
     assert.equal(restarted.key,local.JWT_SECRET_KEY); assert.equal(restarted.mongo,'mongodb://localhost/fixture'); assert.deepEqual(restarted.args,['restart','api','--update-env']);
     assert.equal(spawnSync(process.execPath,command,{env,encoding:'utf8'}).status,0);
     assert.equal(dotenv.parse(await readFile(join(directory,'.env.local'),'utf8')).JWT_SECRET_KEY,local.JWT_SECRET_KEY);
+    assert.equal(spawnSync(process.execPath,[...command,'--pm2-id=2'],{env,encoding:'utf8'}).status,0);
+    assert.deepEqual(JSON.parse(await readFile(capture,'utf8')).args,['restart','2','--update-env']);
+    assert.notEqual(spawnSync(process.execPath,[...command,'--pm2-id=not-an-id'],{env,encoding:'utf8'}).status,0);
   } finally { await rm(directory,{recursive:true,force:true}); }
 });
