@@ -4,10 +4,13 @@ import Navbar from "../components/Navbar";
 import PotDetailsModal from "../components/Serre/PotDetailsModal";
 import SerreTable from "../components/Serre/Table";
 import { useDisclosure } from "@chakra-ui/react";
+import { createSocket } from "../lib/api";
 
 const SerrePage = () => {
     const [selectedPotId, setSelectedPotId] = useState(null);
     const [selectedPotKey, setSelectedPotKey] = useState(null);
+    const [sensorData, setSensorData] = useState({});
+    const [sensorConnected, setSensorConnected] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     // Configuration state
@@ -29,6 +32,25 @@ const SerrePage = () => {
                 console.error("Error loading serre config:", error);
             }
         }
+    }, []);
+
+    useEffect(() => {
+        const socket = createSocket();
+        socket.on("connect", () => setSensorConnected(true));
+        socket.on("disconnect", () => {
+            setSensorConnected(false);
+            setSensorData({});
+        });
+        socket.on("connect_error", () => {
+            setSensorConnected(false);
+            setSensorData({});
+        });
+        socket.on("sensorData", (reading) => {
+            if (reading && typeof reading === "object" && !Array.isArray(reading)) {
+                setSensorData(reading);
+            }
+        });
+        return () => socket.disconnect();
     }, []);
 
     const handlePotClick = (potId, potKey) => {
@@ -87,6 +109,8 @@ const SerrePage = () => {
                 potId={selectedPotId}
                 potKey={selectedPotKey}
                 potConfigs={config.potConfigs}
+                sensorData={sensorData}
+                sensorConnected={sensorConnected}
             />
         </div>
     );
