@@ -29,6 +29,7 @@ const Page = () => {
   const [selectedPot, setSelectedPot] = useState(null);
   const [tempPotId, setTempPotId] = useState("");
   const [tempPlantType, setTempPlantType] = useState("");
+  const [tempSoilSensor, setTempSoilSensor] = useState("");
 
   const toast = useToast();
 
@@ -245,6 +246,7 @@ const Page = () => {
     setSelectedPot(key);
     setTempPotId(existingConfig.id || `T${tableIndex + 1}-P${potIndex + 1}`);
     setTempPlantType(existingConfig.type || "");
+    setTempSoilSensor(existingConfig.soilSensor || "");
   };
 
   const handleSavePotConfig = () => {
@@ -255,6 +257,7 @@ const Page = () => {
       [selectedPot]: {
         id: tempPotId,
         type: tempPlantType,
+        soilSensor: tempSoilSensor === "" ? null : Number(tempSoilSensor),
       },
     }));
 
@@ -270,6 +273,7 @@ const Page = () => {
     setSelectedPot(null);
     setTempPotId("");
     setTempPlantType("");
+    setTempSoilSensor("");
   };
 
   return (
@@ -526,6 +530,27 @@ const Page = () => {
                                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                                       placeholder="e.g., Tomato"
                                     />
+                                  </div>
+                                  <div>
+                                    <label htmlFor={`soil-sensor-${key}`} className="block text-xs font-medium text-gray-600 mb-1">
+                                      Soil Sensor
+                                    </label>
+                                    <select
+                                      id={`soil-sensor-${key}`}
+                                      value={tempSoilSensor}
+                                      onChange={(e) => setTempSoilSensor(e.target.value)}
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                    >
+                                      <option value="">No sensor assigned</option>
+                                      {Array.from({ length: 12 }, (_, i) => i + 1).map((sensor) => (
+                                        <option key={sensor} value={sensor}>Soil Sensor {sensor}</option>
+                                      ))}
+                                    </select>
+                                    {tempSoilSensor && (
+                                      <p className="mt-2 text-xs text-gray-500">
+                                        H_S{tempSoilSensor} · T_S{tempSoilSensor} · C_S{tempSoilSensor} · PH_S{tempSoilSensor}
+                                      </p>
+                                    )}
                                   </div>
                                   <button
                                     onClick={handleSavePotConfig}
