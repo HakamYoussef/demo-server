@@ -1,5 +1,6 @@
 "use client";
-import { io } from "socket.io-client";
+import { apiFetch as fetch } from "../lib/api";
+import { createSocket as io } from "../lib/api";
 import SensorSelector from "../components/SensorSelector";
 import React from "react";
 import { useState, useEffect, useRef } from "react";
@@ -49,11 +50,10 @@ const Card = () => {
   useEffect(() => {
     const fetchThreshold = async () => {
       try {
-        const response = await fetch("http://213.199.35.129:5002/api/admin/threshold", {
+        const response = await fetch("/api/admin/threshold", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
           },
         });
 
@@ -72,9 +72,7 @@ const Card = () => {
   }, [token, toast]);
 
   useEffect(() => {
-    const socket = io(
-      process.env.NEXT_PUBLIC_SENSOR_API_URL || "http://213.199.35.129:5002"
-    );
+    const socket = io();
 
     socket.on("sensorData", (latestData) => {
       if (latestData && typeof latestData === "object" && !Array.isArray(latestData)) {

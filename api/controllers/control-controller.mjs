@@ -43,7 +43,7 @@ const updateControl = asyncHandler(async (req, res) => {
 
         res.status(200).json({ message: `${field} updated successfully`, control });
     } catch (error) {
-        res.status(500).json({ message: "Error updating control", error });
+        res.status(500).json({ message: "Error updating control" });
     }
 });
 

@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 import React from "react";
 import { FaThermometerHalf, FaTint } from "react-icons/fa";
 import { MdOutlineSensors } from "react-icons/md";
@@ -9,7 +10,7 @@ const Card = ({ title, value, descript }) => {
   const [capteur, setCapteur] = useState("h");
 
   useEffect(() => {
-    fetch("http://localhost:5002/api/capteurs/dataa")
+    fetch("/api/capteurs/dataa")
       .then((response) => response.json())
       .then((data) => setData(data))
       .catch((err) => console.log(err));

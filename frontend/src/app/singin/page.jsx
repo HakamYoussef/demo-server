@@ -1,4 +1,5 @@
 'use client'
+import { apiFetch as fetch } from "../lib/api";
 import { useAuthContext } from "../context/authContext";
 import { useRouter } from "next/navigation";
 import { useToast, Spinner } from "@chakra-ui/react";
@@ -31,7 +32,7 @@ export default function Singin() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://213.199.35.129:5002/api/users/login", {
+      const response = await fetch("/api/users/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
         headers: {
@@ -40,10 +41,9 @@ export default function Singin() {
       });
       const data = await response.json();
       setIsLoading(false);
-      localStorage.setItem("userInfo", JSON.stringify(data));
 
       if (response.ok) {
-        login(data.user._id, data.token);
+        login(data.user._id, data.expiresAt, data.user.isAdmin);
         toast({
           title: "Login successful!",
           status: "success",

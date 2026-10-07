@@ -1,5 +1,5 @@
 "use client";
-import { io } from "socket.io-client";
+import { createSocket as io } from "../lib/api";
 import SensorSelector from "../components/SensorSelector";
 import React, { useState, useEffect } from "react";
 import { FaThermometerHalf, FaTint, FaFlask, FaLeaf } from "react-icons/fa";
@@ -17,9 +17,7 @@ const Card = () => {
   ];
 
   useEffect(() => {
-    const socket = io(
-      process.env.NEXT_PUBLIC_SENSOR_API_URL || "http://213.199.35.129:5002"
-    );
+    const socket = io();
 
     socket.on("sensorData", (latestData) => {
       if (latestData && typeof latestData === "object" && !Array.isArray(latestData)) {

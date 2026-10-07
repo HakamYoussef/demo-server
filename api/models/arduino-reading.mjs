@@ -9,6 +9,8 @@ const readingSchema = new mongoose.Schema(
   { collection: 'arduino_readings' }
 );
 
+readingSchema.index({ time: -1, _id: -1 });
+
 const ArduinoReading = mongoose.model('arduino_reading', readingSchema);
 
 export { ArduinoReading };

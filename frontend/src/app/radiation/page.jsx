@@ -1,7 +1,9 @@
-
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 
-import { io } from "socket.io-client";
+
+
+import { createSocket as io } from "../lib/api";
 import { Button, Input, Select, useToast } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -13,29 +15,8 @@ import { MdSensors, MdOutlineTune, MdGpsFixed } from "react-icons/md";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
-const DEFAULT_API_BASE_URL = "http://213.199.35.129:5002";
-const apiBaseUrl = (
-  typeof process.env.NEXT_PUBLIC_API_BASE_URL === "string"
-    ? process.env.NEXT_PUBLIC_API_BASE_URL
-    : DEFAULT_API_BASE_URL
-).replace(/\/+$/, "");
-const READINGS_ENDPOINT = `${apiBaseUrl}/api/v1/readings`;
-const RADIATION_ENDPOINT = `${apiBaseUrl}/api/radiation`;
-
-const deriveWsUrl = (base) => {
-  try {
-    const u = new URL(base);
-    u.protocol = u.protocol === "https:" ? "wss:" : "ws:";
-    u.pathname = '';
-    return u.toString();
-  } catch {
-    return undefined;
-  }
-};
-
-const WEBSOCKET_URL =
-  (typeof process.env.NEXT_PUBLIC_WS_URL === "string" && process.env.NEXT_PUBLIC_WS_URL.trim()) ||
-  deriveWsUrl(apiBaseUrl);
+const READINGS_ENDPOINT = "/api/v1/readings";
+const RADIATION_ENDPOINT = "/api/radiation";
 
 const getEntryTime = (entry) => entry?.time ?? entry?.timestamp ?? null;
 
@@ -170,7 +151,6 @@ function RadiationDash() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(parsedValues),
       });
@@ -206,16 +186,7 @@ function RadiationDash() {
   }, [fetchData]);
 
   useEffect(() => {
-    if (!WEBSOCKET_URL) {
-      showToast("ws-missing", {
-        title: "Live updates unavailable",
-        description: "Configure NEXT_PUBLIC_WS_URL to enable the radiation stream.",
-        status: "warning",
-      });
-      return;
-    }
-
-    const socket = io(WEBSOCKET_URL);
+    const socket = io();
     socketRef.current = socket;
 
     socket.on('connect', () => console.log("WebSocket connection established"));

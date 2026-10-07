@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 import React, { useRef, useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Records from "../components/Records";
@@ -50,7 +51,7 @@ const Archive = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    let url = `http://213.199.35.129:5002/api/capteurs/dataa`;
+    let url = `/api/capteurs/dataa`;
     let queryParams = [];
 
     if (startDate) {
@@ -76,7 +77,7 @@ const Archive = () => {
     }
 
     fetch(url)
-      .then((response) => response.json())
+      .then(async (response) => { if (!response.ok) throw new Error((await response.json()).message || "Unable to load records"); return response.json(); })
       .then((data) => setData(data))
       .catch((err) => console.error("Fetch error:", err));
   };

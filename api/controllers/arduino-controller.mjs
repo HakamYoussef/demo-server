@@ -1,3 +1,4 @@
+import { pagination } from "../lib/pagination.mjs";
 
 import { Radiation } from "../models/Radiation.mjs";
 import { ArduinoReading } from "../models/arduino-reading.mjs";
@@ -11,21 +12,11 @@ const getConfig = async (req, res) => {
     const { Vbas = 0, Vhaut = 0 } = config;
     res.json({ Vbas, Vhaut });
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving config", error });
+    res.status(500).json({ message: "Error retrieving config" });
   }
 };
 
-const parseNumericField = (value) => {
-  if (value === undefined || value === null) {
-    return { valid: false };
-  }
-
-  const parsed = typeof value === "string" ? Number.parseFloat(value) : value;
-
-  return Number.isFinite(parsed)
-    ? { valid: true, value: parsed }
-    : { valid: false };
-};
+const parseNumericField = (value) => ({ valid: typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= Number.MAX_SAFE_INTEGER, value });
 
 const postComptage = async (req, res) => {
   try {
@@ -49,7 +40,7 @@ const postComptage = async (req, res) => {
     const providedTime = time ?? timestamp;
     if (providedTime !== undefined && providedTime !== null) {
       const parsedTime = new Date(providedTime);
-      if (Number.isNaN(parsedTime.getTime())) {
+      if (typeof providedTime !== "string" || Number.isNaN(parsedTime.getTime()) || Math.abs(Date.now() - parsedTime.getTime()) > 86400000) {
         return res.status(400).json({ message: "time must be a valid date" });
       }
       readingData.time = parsedTime;
@@ -59,7 +50,7 @@ const postComptage = async (req, res) => {
     await reading.save();
     res.status(201).json(reading);
   } catch (error) {
-    res.status(500).json({ message: "Error saving data", error });
+    res.status(500).json({ message: "Error saving data" });
   }
 };
 
@@ -77,9 +68,10 @@ const asDate = (value) => {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 };
 
-const getComptage = async (req, res) => {
+const getComptage = async (req, res, next) => {
   try {
-    const readings = await ArduinoReading.find().sort({ time: 1, _id: 1 }).lean();
+    const { limit, skip } = pagination(req.query);
+    const readings = await ArduinoReading.find().sort({ time: -1, _id: -1 }).skip(skip).limit(limit).lean();
 
     const normalized = readings
       .map((entry) => {
@@ -110,7 +102,7 @@ const getComptage = async (req, res) => {
 
     res.json(normalized);
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving data", error });
+    next(error);
   }
 };
 
