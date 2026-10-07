@@ -28,26 +28,44 @@ test("validates device topics, JSON, schema fields and finite numbers", () => {
   assert.throws(() => parseTelemetry(topic, Buffer.alloc(65537)));
 });
 
-test("persists before live emission; repeated message IDs share an upsert key", async () => {
-  const calls = [];
-  const model = {async findOneAndUpdate(filter, update, options) {
-    assert.equal(options.upsert, true);
-    calls.push(filter.mqttMessageId);
-    return {toObject: () => update.$setOnInsert};
+test("time-series writes use inserts and deduplicate concurrent redeliveries", async () => {
+  const documents = [];
+  const model = {async create(document) {
+    documents.push(document);
+    return {toObject: () => document};
   }};
-  const io = {emit(event, reading) {assert.equal(event, "sensorData");assert.ok(calls.length);assert.equal(reading.T_A1,23);}};
-  const ack = await ingestTelemetry({topic,payload,model,io});
-  assert.equal(ack.status,"stored");
-  await ingestTelemetry({topic,payload,model,io});
-  assert.equal(calls[0],calls[1]);
-  assert.equal(await ingestTelemetry({topic,payload,retained:true,model,io}),null);
-  assert.equal(calls.length,2);
+  const io = {emit(event, reading) {
+    assert.equal(event, "sensorData");
+    assert.ok(documents.length);
+    assert.equal(reading.T_A1, 23);
+  }};
+  const results = await Promise.all([
+    ingestTelemetry({topic,payload,model,io}),
+    ingestTelemetry({topic,payload,model,io}),
+  ]);
+  assert.equal(results[0].status, "stored");
+  assert.equal(results[1].status, "stored");
+  assert.equal(documents.length, 1);
+  assert.equal(documents[0].mqttMessageId, "esp32-sim-01:reading-01");
+  assert.equal(await ingestTelemetry({topic,payload,retained:true,model,io}), null);
+  const next = Buffer.from(JSON.stringify({messageId:"reading-02",values:{T_A1:23}}));
+  await ingestTelemetry({topic,payload:next,model,io});
+  assert.equal(documents.length, 2);
 });
 
-test("database errors prevent successful live emissions", async () => {
-  const model = {async findOneAndUpdate() {throw Error("database unavailable");}};
-  const io = {emit() {assert.fail("should not broadcast an unsaved reading");}};
-  await assert.rejects(ingestTelemetry({topic,payload,model,io}),/database unavailable/);
+test("failed inserts do not broadcast and can be retried", async () => {
+  let calls = 0, emitted = 0;
+  const model = {async create(document) {
+    calls++;
+    if (calls === 1) throw Error("database unavailable");
+    return document;
+  }};
+  const io = {emit() {emitted++;}};
+  await assert.rejects(ingestTelemetry({topic,payload,model,io}), /database unavailable/);
+  assert.equal(emitted, 0);
+  await ingestTelemetry({topic,payload,model,io});
+  assert.equal(calls, 2);
+  assert.equal(emitted, 1);
 });
 
 test("subscribes again after connection and keeps malformed messages isolated", async () => {

@@ -6,6 +6,10 @@ import { readingModel } from "../models/sample.mjs";
 const DEVICE_ID = /^[a-zA-Z0-9_-]{1,64}$/;
 const MESSAGE_ID = /^[a-zA-Z0-9_-]{1,80}$/;
 const MAX_PAYLOAD_BYTES = 65536;
+// Time-series collections do not support unique indexes or upserts.
+// Deduplicate recent QoS 1 deliveries within this server process.
+const recentWrites = new WeakMap();
+const MAX_RECENT_MESSAGES = 256;
 
 export function mqttSettings(env = process.env) {
   if (!env.MQTT_URL) return null;
@@ -68,11 +72,25 @@ export async function ingestTelemetry({ topic, payload, retained = false, model 
   // A retained measurement must not be recorded as a fresh reading on reconnect.
   if (retained) return null;
   const reading = parseTelemetry(topic, payload);
-  const saved = await model.findOneAndUpdate(
-    { mqttMessageId: reading.document.mqttMessageId },
-    { $setOnInsert: reading.document },
-    { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
-  );
+  let cache = recentWrites.get(model);
+  if (!cache) {
+    cache = new Map();
+    recentWrites.set(model, cache);
+  }
+  const key = reading.document.mqttMessageId;
+  let write = cache.get(key);
+  if (!write) {
+    if (cache.size >= MAX_RECENT_MESSAGES) cache.delete(cache.keys().next().value);
+    write = Promise.resolve().then(() => model.create(reading.document));
+    cache.set(key, write);
+  }
+  let saved;
+  try {
+    saved = await write;
+  } catch (error) {
+    if (cache.get(key) === write) cache.delete(key);
+    throw error;
+  }
   io.emit("sensorData", saved.toObject ? saved.toObject() : saved);
   return { deviceId: reading.deviceId, messageId: reading.messageId, status: "stored" };
 }

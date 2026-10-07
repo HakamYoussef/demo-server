@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const readingSchema = new Schema({
   deviceId: { type: String },
-  mqttMessageId: { type: String, unique: true, sparse: true },
+  mqttMessageId: { type: String },
     timestamp: { type: Date, required: true },
   C_S2: { type: Number },
   H_S6: { type: Number },
