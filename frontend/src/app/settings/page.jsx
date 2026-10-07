@@ -1,5 +1,5 @@
 "use client";
-import { apiFetch as fetch } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@chakra-ui/react";

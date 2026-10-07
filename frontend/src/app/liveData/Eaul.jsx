@@ -1,5 +1,5 @@
 "use client";
-import { createSocket as io } from "../lib/api";
+import { createSocket as io } from "../lib/api.mjs";
 import SensorSelector from "../components/SensorSelector";
 import React, { useState, useEffect } from "react";
 import { FaTint, FaFlask, FaWater, FaVial, FaWind } from "react-icons/fa";

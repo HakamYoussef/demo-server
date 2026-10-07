@@ -1,5 +1,5 @@
 "use client";
-import { apiFetch as fetch } from "../lib/api";
+import { apiFetch as fetch } from "../lib/api.mjs";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { FaWater, FaDroplet, FaChartLine } from "react-icons/fa6";

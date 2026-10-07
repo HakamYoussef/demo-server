@@ -4,3 +4,7 @@ frontend/node_modules/
 **/__pycache__/
 **/.env
 *.key
+
+# Server-only configuration and backups must never be committed.
+**/.env.local
+**/.env.local.backup-*

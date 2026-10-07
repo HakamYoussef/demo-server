@@ -1,3 +1,4 @@
+import { usesSecureCookies } from "../lib/deployment-config.mjs";
 import "../config.mjs";
 import jwt from "jsonwebtoken";
 import { timingSafeEqual } from "node:crypto";
@@ -5,7 +6,7 @@ import { User } from "../models/user.mjs";
 
 export const sessionCookie = "session";
 export const sessionSeconds = 900;
-export const cookieOptions = () => ({ httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", path: "/" });
+export const cookieOptions = () => ({ httpOnly: true, secure: usesSecureCookies(), sameSite: "strict", path: "/" });
 export const allowedOrigins = () => (process.env.APP_ORIGINS || "http://localhost:3000").split(",").map(s => s.trim()).filter(Boolean);
 export function readCookie(header = "") {
   const entry = header.split(";").find(item => item.trim().startsWith(`${sessionCookie}=`));

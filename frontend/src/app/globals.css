@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+/* Keep utilities outside a cascade layer so Chakra UI 2 resets cannot override them. */
+@import "tailwindcss/utilities.css";
 @config "../../tailwind.config.js";
 
 /* ===== MODERN DESIGN SYSTEM ===== */

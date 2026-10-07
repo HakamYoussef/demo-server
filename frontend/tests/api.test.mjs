@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { apiFetch } from '../src/app/lib/api.js';
+import { apiFetch } from '../src/app/lib/api.mjs';
 
 test('API requests retain cookies, remove obsolete bearer headers, and refuse other origins', async () => {
   const original = globalThis.fetch;
