@@ -1,78 +1,39 @@
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
-const secretKey = process.env.JWT_SECRET_KEY;
-import { User, validateLoginUser, validateRegisterUser } from "../models/user.mjs";
 import bcrypt from "bcryptjs";
-import fs from 'fs';
+import { User, validateLoginUser, validateRegisterUser } from "../models/user.mjs";
+import { cookieOptions, sessionCookie, sessionSeconds } from "../middlewares/authorization.mjs";
 
-// Controller function to handle user registration
-const register = asyncHandler(async (req, res) => {
-  // Validate registration data
-  const { error } = validateRegisterUser(req.body);
-  if (error) {
-    return res.status(400).json(error.details[0].message);
-  }
-
-  // Check if the user already exists
-  let user = await User.findOne({ email: req.body.email });
-  if (user) {
-    return res.status(400).json({ message: "this user already registered" });
-  }
-
-  // Hash the user's password
-  const salt = await bcrypt.genSalt(10); 
-  req.body.password = await bcrypt.hash(req.body.password, salt);
-
-  // Create a new user
-  user = new User({
-    email: req.body.email,
-    password: req.body.password,
+export const register = asyncHandler(async (req, res) => {
+  const { error, value } = validateRegisterUser(req.body);
+  if (error) return res.status(400).json({ message: "Invalid registration data" });
+  if (await User.findOne({ email: value.email })) return res.status(409).json({ message: "Account already exists" });
+  const user = await new User({ email: value.email, password: await bcrypt.hash(value.password, 12) }).save();
+  res.status(201).json({ _id: user._id, email: user.email, isAdmin: user.isAdmin });
+});
+export const login = asyncHandler(async (req, res) => {
+  const { error, value } = validateLoginUser(req.body);
+  if (error) return res.status(400).json({ message: "Invalid login data" });
+  const user = await User.findOne({ email: value.email });
+  // Compare even when the account does not exist to reduce timing-based enumeration.
+  const dummyHash = "$2a$12$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KIUgO2t0jWMUW";
+  const valid = await bcrypt.compare(value.password, user?.password || dummyHash);
+  if (!user || !valid) return res.status(401).json({ message: "Invalid email or password" });
+  const token = jwt.sign({ _id: String(user._id), version: user.sessionVersion || 0 }, process.env.JWT_SECRET_KEY, {
+    expiresIn: sessionSeconds, issuer: "sensor-api", audience: "sensor-web", algorithm: "HS256"
   });
-  const result = await user.save();
-  res.status(200).json(result);
-  // Optionally, generate and send a token here
-  // const token = user.generateToken();
-  // const { password, ...other } = result._doc;
-  // res.status(201).json({ ...other, token });
+  res.cookie(sessionCookie, token, { ...cookieOptions(), maxAge: sessionSeconds * 1000 });
+  res.set("Cache-Control", "no-store");
+  return res.json({ user: { _id: user._id, email: user.email, isAdmin: user.isAdmin }, expiresAt: Date.now() + sessionSeconds * 1000 });
 });
-
-// Controller function to handle user login
-const login = asyncHandler(async (req, res) => {
-  // Find the user by email
-  const user = await User.findOne({ email: req.body.email });
-  if (!req.body.email) {
-    return res.status(400).json({ message: "Email should not be empty" });
-  }
-  if (!user) {
-    return res.status(400).json({ message: "invalid Email" });
-  }
-  if (!req.body.password) {
-    return res.status(400).json({ message: "Password should not be empty" });
-  }
-
-  // Check if the provided password matches the stored hashed password
-  const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
-  if (!isPasswordMatch) {
-    return res.status(400).json({ message: "invalid Password" });
-  }
-
-  // Generate a JWT token
-  const token = jwt.sign({ _id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET_KEY);
-  res.cookie("token", token, { expire: new Date(Date.now() + 100000000) });
-
-  // Exclude the password from the user object and send the response
-  const { password, ...other } = user._doc;
-  return res.json({
-    token: token,
-    user: { ...other },
-  });
+export const me = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.auth._id).select("_id email isAdmin");
+  res.set("Cache-Control", "no-store");
+  res.json({ user, expiresAt: req.auth.exp * 1000 });
 });
-
-// Controller function to retrieve a list of all users (excluding passwords)
-const getUsers = asyncHandler(async (req, res) => {
-  // Fetch all users and exclude the password field
-  const users = await User.find().select("-password");
-  res.status(200).json(users);
+export const logout = asyncHandler(async (req, res) => {
+  await User.updateOne({ _id: req.auth._id }, { $inc: { sessionVersion: 1 } });
+  req.app.get("socketio")?.in(`user:${req.auth._id}`).disconnectSockets(true);
+  res.clearCookie(sessionCookie, cookieOptions());
+  res.status(204).end();
 });
-
-export { login, register };

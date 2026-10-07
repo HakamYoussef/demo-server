@@ -1,14 +1,10 @@
 import express from "express";
-import { login, register } from "../controllers/user-controller.mjs";
-import { check } from "express-validator";
-
+import { login, register, me, logout } from "../controllers/user-controller.mjs";
+import { verifyToken, isAdmin } from "../middlewares/authorization.mjs";
+import { rateLimit } from "../middlewares/security.mjs";
 const userRouter = express.Router();
-
-
-
-userRouter.post("/register",register);
-
-
-userRouter.post("/login", login);
-
+userRouter.post("/register", verifyToken, isAdmin, register);
+userRouter.post("/login", rateLimit({ limit: 10, windowMs: 60000 }), login);
+userRouter.get("/me", verifyToken, me);
+userRouter.post("/logout", verifyToken, logout);
 export default userRouter;

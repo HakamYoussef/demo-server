@@ -1,3 +1,4 @@
+import { pagination } from "../lib/pagination.mjs";
 import { readingModel } from "../models/sample.mjs";
 
 /**
@@ -8,42 +9,20 @@ import { readingModel } from "../models/sample.mjs";
  * @param {Object} req - Express request object, expects query parameters 'startDate' and 'endDate'.
  * @param {Object} res - Express response object, used to send back the sensor data or error messages.
  */
-const getDataa = async (req, res) => {
-  const { startDate, endDate } = req.query;
-
-  // Check if both startDate and endDate are provided
-  if (startDate && endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    // Validate date objects
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).send("Invalid date format.");
+const getDataa = async (req, res, next) => {
+  try {
+    const { limit, skip } = pagination(req.query);
+    const { startDate, endDate } = req.query;
+    const filter = {};
+    if (startDate !== undefined || endDate !== undefined) {
+      const start = new Date(startDate), end = new Date(endDate);
+      if (typeof startDate !== "string" || typeof endDate !== "string" || !Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start > end || end - start > 31 * 86400000) {
+        return res.status(400).json({ message: "Provide an ordered date range of at most 31 days" });
+      }
+      filter.timestamp = { $gte: start, $lte: end };
     }
-
-    try {
-      // Fetch data within the specified date range
-      const capteurs = await readingModel.find({
-        timestamp: {
-          $gte: start,
-          $lte: end
-        }
-      });
-      res.json(capteurs);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      res.status(500).send("Error fetching data");
-    }
-  } else {
-    // If no startDate and endDate are provided, return all data
-    try {
-      const capteurs = await readingModel.find();
-      res.json(capteurs);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      res.status(500).send("Error fetching data");
-    }
-  }
+    res.json(await readingModel.find(filter).sort({ timestamp: -1, _id: -1 }).skip(skip).limit(limit).lean());
+  } catch (err) { next(err); }
 };
 
 /**
@@ -75,7 +54,7 @@ const fetchLatestData = async () => {
   try {
     // Fetch the latest data entry by sorting in descending order of the timestamp
     const latestData = await readingModel.findOne().sort({ timestamp: -1 }).exec();
-    console.log("Fetched Latest Data:", latestData); 
+
     return latestData;
   } catch (err) {
     console.error("Error fetching latest data:", err);

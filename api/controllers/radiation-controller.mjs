@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { Radiation } from "../models/Radiation.mjs";       // Collection pour les seuils
-import { ArduinoReading } from "../models/ArduinoReading.mjs"; // Collection pour les mesures
+import { ArduinoReading } from "../models/arduino-reading.mjs"; // Collection pour les mesures
 
 /**
  * POST : L'ESP32 envoie le comptage et le pic.
@@ -8,6 +8,9 @@ import { ArduinoReading } from "../models/ArduinoReading.mjs"; // Collection pou
  */
 const addRadiationData = asyncHandler(async (req, res) => {
   const { comptage, pic } = req.body;
+  if (![comptage, pic].every(value => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= Number.MAX_SAFE_INTEGER)) {
+    return res.status(400).json({ message: "comptage and pic must be nonnegative finite numbers" });
+  }
 
   // 1. Sauvegarde de la mesure dans 'arduino_readings'
   const readingEntry = new ArduinoReading({ 

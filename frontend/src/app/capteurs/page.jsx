@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 import React from "react";
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
@@ -11,7 +12,7 @@ const page = () => {
     console.log(data);
   }, [data]);*/
   useEffect(() => {
-    fetch("http://213.199.35.129:5002/api/chart/readings")
+    fetch("/api/chart/readings")
       .then((response) => response.json())
       .then((data) => {
         const keys = Object.keys(data[0].readings);

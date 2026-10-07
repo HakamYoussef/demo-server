@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 import React, { useState, useEffect } from "react";
 import { FaTemperatureHigh } from "react-icons/fa";
 
@@ -12,7 +13,7 @@ const Card = ({ title, value, descript }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:5002/api/capteurs/dataa");
+      const response = await fetch("/api/capteurs/dataa");
       const jsonData = await response.json();
 
       setData(jsonData[0]);

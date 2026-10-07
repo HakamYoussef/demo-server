@@ -1,3 +1,4 @@
+import { apiFetch as fetch } from "../lib/api";
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../context/authContext";
 import { useToast } from "@chakra-ui/react";
@@ -17,11 +18,10 @@ const ControlButton = ({ field, isOn }) => {
     setIsLoading(true);
     try {
       const value = !buttonState;
-      const response = await fetch("http://213.199.35.129:5002/api/admin/control", {
+      const response = await fetch("/api/admin/control", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ field, value }),
       });

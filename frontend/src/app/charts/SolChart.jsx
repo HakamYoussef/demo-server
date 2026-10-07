@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { FaDatabase, FaMicrochip, FaChartLine } from "react-icons/fa";
@@ -27,7 +28,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://213.199.35.129:5002/api/capteurs/dataa")
+    fetch("/api/capteurs/dataa")
       .then((response) => response.json())
       .then((data) => {
         setChartData(data);

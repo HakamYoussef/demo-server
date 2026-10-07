@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@chakra-ui/react";
@@ -15,7 +16,7 @@ const Page = () => {
   const [compare, setCompare] = useState(false);
   const [thresholdTemp, setThresholdTemp] = useState("");
   const router = useRouter();
-  const { token } = useAuthContext();
+  const { token, isAdmin } = useAuthContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmpassword] = useState("");
@@ -34,11 +35,10 @@ const Page = () => {
   useEffect(() => {
     const fetchThreshold = async () => {
       try {
-        const response = await fetch("http://213.199.35.129:5002/api/admin/threshold", {
+        const response = await fetch("/api/admin/threshold", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
           },
         });
 
@@ -145,11 +145,10 @@ const Page = () => {
     const formData = { email, password };
 
     try {
-      const response = await fetch("http://213.199.35.129:5002/api/admin/register", {
+      const response = await fetch("/api/admin/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -164,7 +163,6 @@ const Page = () => {
           isClosable: true,
           position: "bottom",
         });
-        localStorage.setItem("userInfo", JSON.stringify(data));
         setEmail("");
         setPassword("");
         setConfirmpassword("");
@@ -190,7 +188,7 @@ const Page = () => {
 
   const handleSaveThreshold = async () => {
     try {
-      const response = await fetch("http://213.199.35.129:5002/api/admin/threshold", {
+      const response = await fetch("/api/admin/threshold", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ temperatureThreshold: parseFloat(thresholdTemp) }),
@@ -317,6 +315,7 @@ const Page = () => {
               </div>
 
               <button
+                disabled={!isAdmin}
                 onClick={handleSaveThreshold}
                 className="w-full modern-btn modern-btn-primary flex items-center justify-center gap-2"
               >
@@ -394,6 +393,7 @@ const Page = () => {
               </div>
 
               <button
+                disabled={!isAdmin}
                 onClick={submitHandler}
                 className="w-full modern-btn modern-btn-primary flex items-center justify-center gap-2"
               >

@@ -17,7 +17,7 @@ const getThreshold = async (req, res) => {
       }
       res.status(200).json(threshold);
     } catch (error) {
-      res.status(500).json({ message: "Server error", error });
+      res.status(500).json({ message: "Server error" });
     }
 };
 
@@ -31,6 +31,9 @@ const getThreshold = async (req, res) => {
  */
 const updateThreshold = async (req, res) => {
     const { temperatureThreshold } = req.body;
+    if (typeof temperatureThreshold !== "number" || !Number.isFinite(temperatureThreshold) || temperatureThreshold < -50 || temperatureThreshold > 100) {
+      return res.status(400).json({ message: "Temperature threshold must be between -50 and 100 degrees Celsius" });
+    }
   
     try {
       // Find the existing threshold value
@@ -47,7 +50,7 @@ const updateThreshold = async (req, res) => {
       await threshold.save();
       res.status(200).json(threshold);
     } catch (error) {
-      res.status(500).json({ message: "Server error", error });
+      res.status(500).json({ message: "Server error" });
     }
 };
 

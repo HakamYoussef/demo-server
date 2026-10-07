@@ -1,4 +1,5 @@
 "use client";
+import { apiFetch as fetch } from "../lib/api";
 import React, { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 
@@ -10,7 +11,7 @@ const Ddd = () => {
   const [chartData, setChartData] = useState({});
   const [plotImage, setPlotImage] = useState(null);
   useEffect(() => {
-    fetch("http://213.199.35.129:5002/api/capteurs/data")
+    fetch("/api/capteurs/data")
       .then((response) => response.json())
       .then((data) => setChartData(data[0].UsersData.nabil.DATA))
       .catch((err) => console.log(err));

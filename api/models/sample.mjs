@@ -89,6 +89,8 @@ const readingSchema = new Schema({
   T_S4: { type: Number }
 });
 
+readingSchema.index({ timestamp: -1, _id: -1 });
+
 const readingModel = mongoose.model("sensor_reading", readingSchema);
 
 export { readingModel };
