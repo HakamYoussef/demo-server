@@ -10,17 +10,24 @@ export const useAuthContext = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const toast = useToast();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("authToken");
-    const storedId = localStorage.getItem("authId");
-    if (storedToken) {
-      setToken(storedToken);
-    }
-    if (storedId) {
-      setUserId(storedId);
+    try {
+      const storedToken = localStorage.getItem("authToken");
+      const storedId = localStorage.getItem("authId");
+      if (storedToken && storedId) {
+        setToken(storedToken);
+        setUserId(storedId);
+      }
+    } catch {
+      // Treat unavailable browser storage as an unauthenticated session.
+      setToken(null);
+      setUserId(null);
+    } finally {
+      setIsAuthLoading(false);
     }
   }, []);
 
@@ -46,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ userId, token, login, logout }}>
+    <AuthContext.Provider value={{ userId, token, isAuthLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

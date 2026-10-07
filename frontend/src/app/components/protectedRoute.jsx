@@ -5,16 +5,17 @@ import { useAuthContext } from "../context/authContext.jsx";
 
 const protectedRoute = (WrappedComponent) => {
   const Wrapper = (props) => {
-    const { userId, token } = useAuthContext();
+    const { userId, token, isAuthLoading } = useAuthContext();
     const router = useRouter();
 
     useEffect(() => {
-      if (!userId || !token) {
-        router.push("/");
+      if (!isAuthLoading && (!userId || !token)) {
+        router.replace("/");
       }
-    }, [userId, router]);
+    }, [isAuthLoading, userId, token, router]);
 
-    return userId ? <WrappedComponent {...props} /> : null;
+    if (isAuthLoading || !userId || !token) return null;
+    return <WrappedComponent {...props} />;
   };
 
   return Wrapper;
