@@ -105,3 +105,20 @@ export function startMqttSensors({ io, settings, connect = mqtt.connect, logger 
   client.on("reconnect", () => logger.log("MQTTS reconnecting"));
   return client;
 }
+
+
+// Start MQTT after HTTP is listening; MQTT is optional for the rest of the API.
+export async function startOptionalMqttSensors({
+  io, env = process.env, model = readingModel, logger = console,
+  settingsFactory = mqttSettings, start = startMqttSensors,
+}) {
+  try {
+    const settings = settingsFactory(env);
+    if (settings) await model.init();
+    return start({ io, settings, model, logger });
+  } catch (error) {
+    logger.error("MQTTS disabled: initialization failed:", error.message);
+    return null;
+  }
+}
+

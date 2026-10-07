@@ -1,3 +1,4 @@
+import "./config.mjs";
 import express from "express";
 import { createServer } from "http"; // AJOUT : Import natif Node
 import bodyParser from "body-parser";
@@ -5,8 +6,6 @@ import mongoose from "mongoose";
 import userRouter from "./routes/user-routes.mjs";
 import cors from "cors";
 import capteurRouter from "./routes/capteurs-routes.mjs";
-import dotenv from "dotenv";
-dotenv.config();
 import { Server } from "socket.io";
 
 import { fetchLatestData } from "./controllers/capteurs-controller.mjs";
@@ -14,11 +13,10 @@ import adminRouter from "./routes/admin.mjs";
 import radiationRouter from "./routes/radiation-routes.mjs";
 import arduinoRouter from "./routes/arduino-routes.mjs";
 
-import { readingModel } from "./models/sample.mjs";
-import { mqttSettings, startMqttSensors } from "./services/mqtt-sensors.mjs";
+import { requireMongoUri } from "./config.mjs";
+import { startOptionalMqttSensors } from "./services/mqtt-sensors.mjs";
 
-// Validate broker configuration before starting services.
-const sensorMqttSettings = mqttSettings();
+const mongoUri = requireMongoUri();
 const app = express();
 const PORT = process.env.PORT || 5002;
 
@@ -101,16 +99,18 @@ app.use((error, req, res, next) => {
 
 // Connect to MongoDB and start the server
 mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(async () => {
-    await readingModel.init();
-    const mqttClient = startMqttSensors({ io, settings: sensorMqttSettings });
-    httpServer.on("close", () => mqttClient?.end());
+  .connect(mongoUri)
+  .then(() => {
     // 4. ÉCOUTER VIA HTTPSERVER ET NON APP
     httpServer.listen(PORT, () => {
       console.log(`Server is running in REAL-TIME mode on port ${PORT}`);
+      // MQTT configuration or index errors must not disable login and HTTP routes.
+      startOptionalMqttSensors({ io }).then(client => {
+        if (client) httpServer.once("close", () => client.end());
+      });
     });
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);
   });
+
