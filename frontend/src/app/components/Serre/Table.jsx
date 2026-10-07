@@ -8,6 +8,7 @@ const Table = ({ tableId, rows = 4, columns = 3, potConfigs = {}, onPotClick }) 
         const key = `${tableId - 1}-${i}`;
         const config = potConfigs[key] || {};
         return {
+            key,
             id: config.id || `T${tableId}-P${i + 1}`,
             type: config.type || "Unknown",
         };
@@ -36,10 +37,10 @@ const Table = ({ tableId, rows = 4, columns = 3, potConfigs = {}, onPotClick }) 
             >
                 {pots.map((pot) => (
                     <Pot
-                        key={pot.id}
+                        key={pot.key}
                         potId={pot.id}
                         plantType={pot.type}
-                        onClick={onPotClick}
+                        onClick={() => onPotClick(pot.id, pot.key)}
                     />
                 ))}
             </div>
