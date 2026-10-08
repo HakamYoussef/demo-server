@@ -1,5 +1,8 @@
 .page {
+  --spacing: 0.25rem;
   min-height: 100svh;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .header {
@@ -15,6 +18,40 @@
   gap: 1rem;
   min-height: 80px;
   padding-block: 0.75rem;
+}
+
+.header > div {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+.headerContent > div {
+  flex-shrink: 0;
+}
+
+.headerContent img {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.headerContent h1,
+.headerContent p,
+.headerContent button {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.headerContent button {
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.page svg {
+  flex-shrink: 0;
 }
 
 .title {
@@ -39,8 +76,10 @@
   gap: 1.5rem;
 }
 
-.card {
+.page .card {
   border: 1px solid #e5e7eb;
+  padding: 24px;
+  min-width: 0;
 }
 
 .page .card:hover {
@@ -74,5 +113,9 @@
 
   .titleText {
     display: block;
+  }
+
+  .page .card {
+    padding: 16px;
   }
 }
