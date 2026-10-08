@@ -8,6 +8,7 @@ import { Button, Input, Select, useToast } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import styles from "./Radiation.module.css";
 import protectedRoute from "../components/protectedRoute";
 import { useAuthContext } from "../context/authContext";
 import { FaRadiation, FaSignOutAlt, FaChartLine } from "react-icons/fa";
@@ -286,15 +287,15 @@ function RadiationDash() {
     value === null || Number.isNaN(value) ? "N/A" : value.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50">
+    <div className={`${styles.page} min-h-screen bg-gradient-to-br from-slate-50 to-purple-50`}>
       {/* Radiation-specific Header (NOT the agriculture Navbar) */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-white/20">
+      <header className={`${styles.header} glass-card border-b border-white/20`}>
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
+          <div className={styles.headerContent}>
             {/* Left Logo */}
             <div className="flex items-center gap-3">
               <img
-                src="cnesten.png"
+                src="/cnesten.png"
                 alt="CNESTEN Logo"
                 className="w-14 h-14 object-contain"
               />
@@ -305,12 +306,12 @@ function RadiationDash() {
             </div>
 
             {/* Center Title */}
-            <div className="flex items-center gap-3">
+            <div className={`${styles.title} flex items-center gap-3`}>
               <div className="p-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600">
                 <FaRadiation className="text-white" size={24} />
               </div>
-              <div className="hidden md:block">
-                <h1 className="text-xl font-bold text-gray-800">SCA IoT-Monitoring V1.0</h1>
+              <div className={styles.titleText}>
+                <h1 className="text-base lg:text-xl font-bold text-gray-800">SCA IoT-Monitoring V1.0</h1>
                 <p className="text-sm text-gray-500">Radiation Dashboard</p>
               </div>
             </div>
@@ -318,7 +319,7 @@ function RadiationDash() {
             {/* Right - Switch Dashboard & Logout */}
             <div className="flex items-center gap-2">
               <img
-                src="radioactivite.png"
+                src="/radioactivite.png"
                 alt="Radioactive"
                 className="w-12 h-12 object-contain hidden sm:block"
               />
@@ -336,6 +337,7 @@ function RadiationDash() {
 
               <button
                 onClick={handleLogout}
+                aria-label="Logout"
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-gray-600 hover:text-red-500 hover:bg-red-50 transition-all duration-300"
               >
                 <FaSignOutAlt size={18} />
@@ -347,11 +349,11 @@ function RadiationDash() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6" style={{ paddingTop: "100px" }}>
-        <div className="grid grid-cols-1 xl:grid-cols-[minmax(300px,1fr)_minmax(0,3fr)] gap-6">
+      <div className={styles.main}>
+        <div className={styles.dashboard}>
 
           {/* Control Panel */}
-          <div className="modern-card min-w-0 p-4 sm:p-6">
+          <div className={`${styles.card} modern-card min-w-0 p-4 sm:p-6`}>
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="p-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20">
                 <MdSensors size={22} />
@@ -368,7 +370,7 @@ function RadiationDash() {
                   Lower Level Discriminator (LLD)
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-500 transition-colors">
+                  <div className="absolute inset-y-0 left-0 z-10 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-500 transition-colors">
                     <MdGpsFixed size={18} />
                   </div>
                   <Input
@@ -376,7 +378,12 @@ function RadiationDash() {
                     placeholder="Enter LLD value"
                     value={values.Vbas}
                     onChange={handleChange("Vbas")}
-                    className="modern-input !pl-10"
+                    height="48px"
+                    paddingLeft="2.5rem"
+                    borderRadius="12px"
+                    borderWidth="2px"
+                    background="transparent"
+                    focusBorderColor="purple.500"
                   />
                 </div>
               </div>
@@ -384,7 +391,7 @@ function RadiationDash() {
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">ΔV (Delta V)</label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-500 transition-colors">
+                  <div className="absolute inset-y-0 left-0 z-10 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-500 transition-colors">
                     <MdOutlineTune size={18} />
                   </div>
                   <Input
@@ -392,7 +399,12 @@ function RadiationDash() {
                     placeholder="Enter ΔV value"
                     value={values.deltaV}
                     onChange={handleChange("deltaV")}
-                    className="modern-input !pl-10"
+                    height="48px"
+                    paddingLeft="2.5rem"
+                    borderRadius="12px"
+                    borderWidth="2px"
+                    background="transparent"
+                    focusBorderColor="purple.500"
                   />
                 </div>
               </div>
@@ -428,7 +440,7 @@ function RadiationDash() {
                 {/* Radiation Intensity Card */}
                 <div className="relative group overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
-                  <div className="flex items-center justify-between p-4 bg-gray-50/50 rounded-xl border border-gray-100 group-hover:border-purple-200 transition-all relative z-10">
+                  <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-gray-50/50 rounded-xl border border-gray-100 group-hover:border-purple-200 transition-all relative z-10">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-white shadow-sm text-purple-600">
                         <FaRadiation size={18} className="animate-spin-slow" />
@@ -437,7 +449,11 @@ function RadiationDash() {
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-tight">Intensity</p>
                         <Select
                           size="xs"
-                          variant="unstyled"
+                          variant="outline"
+                          minWidth="7rem"
+                          height="28px"
+                          marginTop="4px"
+                          background="white"
                           value={countInterval}
                           onChange={(e) => setCountInterval(e.target.value)}
                           className="text-gray-600 font-medium cursor-pointer hover:text-purple-600 transition-colors"
@@ -460,7 +476,7 @@ function RadiationDash() {
                 </div>
 
                 {/* Signal Amplitude Card */}
-                <div className="flex items-center justify-between p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-white shadow-sm text-blue-500">
                       <MdSensors size={18} />
@@ -497,7 +513,7 @@ function RadiationDash() {
           {/* Charts Section */}
           <div className="min-w-0 space-y-6">
             {/* Integral Mode Chart */}
-            <div className="modern-card min-w-0 p-4 sm:p-6">
+            <div className={`${styles.card} modern-card min-w-0 p-4 sm:p-6`}>
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className="w-2 h-8 bg-gradient-to-b from-green-400 to-emerald-600 rounded-full"></div>
                 <h2 className="text-xl font-bold text-gray-800">Integral Mode</h2>
@@ -515,14 +531,14 @@ function RadiationDash() {
                   config={{ displayModeBar: false }}
                 />
               ) : (
-                <div className="flex items-center justify-center h-64 text-gray-400">
+                <div className="flex items-center justify-center h-64 p-4 text-center text-gray-500">
                   <p>No valid data to display for the time series.</p>
                 </div>
               )}
             </div>
 
             {/* Differential Mode Chart */}
-            <div className="modern-card min-w-0 p-4 sm:p-6">
+            <div className={`${styles.card} modern-card min-w-0 p-4 sm:p-6`}>
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className="w-2 h-8 bg-gradient-to-b from-indigo-400 to-purple-600 rounded-full"></div>
                 <h2 className="text-xl font-bold text-gray-800">Differential Mode</h2>
@@ -536,7 +552,7 @@ function RadiationDash() {
                   config={{ displayModeBar: false }}
                 />
               ) : (
-                <div className="flex items-center justify-center h-64 text-gray-400">
+                <div className="flex items-center justify-center h-64 p-4 text-center text-gray-500">
                   <p>Pic and comptage values are missing or invalid.</p>
                 </div>
               )}
